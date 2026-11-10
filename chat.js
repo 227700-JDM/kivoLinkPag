@@ -13,9 +13,9 @@ const MEMBERS = [
 ];
 
 const BOT_REPLIES = {
-  general: ['¡Bienvenido/a a la comunidad! 👋', 'Qué bueno leerte, cuéntanos más.', 'Gracias por compartir, nos ayuda mucho.'],
-  families: ['A nosotros nos ayudó practicar 10 minutos por día.', 'Gracias por contarlo, es muy valioso para otras familias.', 'Mucho ánimo, cada avance cuenta 💛'],
-  devs: ['Prueba revisar que todos los cables estén bien conectados.', '¿Probaste apagar y prender el guante? A veces ayuda.', 'Si quieres, cuéntanos qué ves en la pantalla y lo revisamos juntos.'],
+  general: ['¡Bienvenido/a a la comunidad! 👋', 'Qué bueno leerte, cuéntanos más.', 'Gracias por tanto calsoki y gracias por tan poco.'],
+  families: ['oc xd mi pana, con empanadas, mermelada y ensalada.', 'Gracias por contarlo, es muy valioso para otras familias.', 'Mucho ánimo, cada avance cuenta 💛'],
+  devs: ['Prueba revisar que todos los cables estén bien conectados.', 'Hola, una pregunta mi panita, eres calsoski?.', 'Si quieres, cuéntanos qué ves en la pantalla y lo revisamos juntos.'],
   support: ['Estamos para apoyarte. Gracias por escribir.', 'No estás solo/a en esto 💙', 'Gracias por tu confianza, aquí te leemos.']
 };
 
