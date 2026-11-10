@@ -1,0 +1,184 @@
+/* forms.css — Estilos de los formularios (login, registro, perfil, ayuda...), los avisos
+   que aparecen arriba (toast) y el botón "volver". */
+
+/* Botón Flotante para Volver al Inicio en Login / Registro / Perfil */
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-card-border);
+  color: var(--color-text);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13.5px;
+  margin-bottom: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px var(--color-shadow);
+  transition: var(--transition-smooth);
+}
+
+.btn-back:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  transform: scale(1.03);
+  filter: brightness(1.08);
+}
+
+/* ==========================================================================
+   COMPONENTES EMERGENTES (TOAST Y MODAL CONFIRMACIÓN)
+   ========================================================================== */
+
+.toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  padding: 16px 24px;
+  border-radius: var(--radius-md);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--color-on-accent);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  transform: translateX(150%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast.success {
+  background: #059669;
+  border-left: 6px solid #34d399;
+}
+
+.toast.error {
+  background: #dc2626;
+  border-left: 6px solid #fca5a5;
+}
+
+.form-header h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.form-header p {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 28px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 14px;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.form-group input:focus, .form-group select:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-glow);
+  background: var(--color-card-bg);
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 6px 16px var(--color-accent-glow);
+  transition: var(--transition-smooth);
+}
+
+.btn-submit:hover {
+  opacity: 0.92;
+  transform: scale(1.03);
+  filter: brightness(1.08);
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13.5px;
+  color: var(--color-text-secondary);
+}
+
+.form-footer a {
+  color: var(--color-accent-ink);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   MENSAJES, AYUDAS Y ACCIONES DE FORMULARIO
+   ========================================================================== */
+
+.form-message { min-height: 1.3em; font-size: 13.5px; font-weight: 500; color: #dc2626; }
+
+.form-message.success { color: #059669; }
+
+.form-hint { font-size: 12px; color: var(--color-text-muted); }
+
+.form-actions-end { display: flex; justify-content: flex-end; margin-top: 10px; }
+
+/* Marca en rojo los campos inválidos solo después de que el usuario interactuó */
+
+.form input:user-invalid, .form select:user-invalid { border-color: #dc2626; }
+
+.form button[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+
+/* Botón "volver" en forma de enlace */
+a.btn-back { display: inline-flex; align-items: center; justify-content: center; text-align: center; }
+
+/* Anillo de enfoque de los campos: halo suave con box-shadow (outline transparente
+   para que siga viéndose en el "modo de alto contraste" de Windows) */
+.form-group input:focus-visible, .form-group select:focus-visible {
+  outline: 2px solid transparent;
+  animation: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--color-accent-glow), 0 0 0 2px var(--color-accent);
+}
+@media (max-width: 700px) { .toast { left: 16px; right: 16px; } }

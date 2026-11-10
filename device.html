@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Dispositivo — KivoLink</title>
+  <meta name="description" content="Empareja y calibra tu guante KivoLink con el ESP32." />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#090b0f" />
+  <link rel="icon" href="assets/logo.png" />
+
+    <script>try{if(localStorage.getItem('kivolink_theme')!=='light')document.documentElement.classList.add('dark-mode')}catch(e){document.documentElement.classList.add('dark-mode')}try{if(sessionStorage.getItem('kv_curtain'))document.documentElement.classList.add('curtain-cover')}catch(e){}try{var p=JSON.parse(localStorage.getItem('kivolink_prefs')||'{}');if(p.largeText)document.documentElement.classList.add('pref-large-text');if(p.highContrast)document.documentElement.classList.add('pref-contrast');if(p.calm)document.documentElement.classList.add('pref-calm');if(p.accent&&p.accent!=='neon')document.documentElement.setAttribute('data-accent',p.accent)}catch(e){}document.documentElement.classList.add('js')</script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/forms.css" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/device.css" />
+  <link rel="stylesheet" href="css/fx.css" />
+</head>
+<body>
+    <div class="curtain" aria-hidden="true">
+    <span class="curtain-layer"><svg class="curtain-edge" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg><svg class="curtain-edge curtain-edge-back" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg></span>
+    <span class="curtain-layer"><svg class="curtain-edge" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg><svg class="curtain-edge curtain-edge-back" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg></span>
+    <span class="curtain-layer"><svg class="curtain-edge" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg><svg class="curtain-edge curtain-edge-back" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg></span>
+  </div>
+
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <canvas id="particles" class="particles" aria-hidden="true"></canvas>
+
+    <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+
+    <audio id="bg-music" src="assets/audio/roxbury.mp3" loop preload="none"></audio>
+  <button id="music-toggle" class="music-toggle" type="button" aria-pressed="false" aria-label="Encender la música de fondo">
+    <span class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+  </button>
+
+    <div id="sidebar-backdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+  <aside id="sidebar" class="sidebar" aria-label="Menú lateral" inert>
+    <div class="sidebar-top">
+      <span class="sidebar-title">Menú</span>
+      <button type="button" id="sidebar-close" class="sidebar-close" aria-label="Cerrar menú lateral">✕</button>
+    </div>
+
+        <section class="sidebar-profile" aria-label="Perfil del usuario">
+      <a href="dashboard.html" id="sidebar-avatar-box" class="sidebar-avatar" aria-label="Ver mi perfil">
+        <span id="sidebar-avatar" aria-hidden="true">?</span>
+        <i class="status-dot" aria-hidden="true"></i>
+      </a>
+      <div class="sidebar-user">
+        <p id="sidebar-name" class="sidebar-name">Invitado</p>
+        <p id="sidebar-status" class="sidebar-status">No conectado</p>
+      </div>
+    </section>
+
+        <div id="sidebar-guest" class="sidebar-guest" hidden>
+      <a class="btn-primary" href="login.html">Iniciar sesión</a>
+      <a class="btn-outline" href="register.html">Crear cuenta</a>
+    </div>
+
+    <nav aria-label="Secciones de la plataforma">
+      <p class="sidebar-group-title">Plataforma</p>
+      <ul class="sidebar-list">
+          <li><a class="sidebar-link" href="index.html" data-page="index.html"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Inicio</span></a></li>
+          <li><button type="button" id="sidebar-notif" class="sidebar-link" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span>Notificaciones</span><span id="sidebar-notif-count" class="sidebar-count" hidden>0</span></button></li>
+          <li><a class="sidebar-link" href="posts.html" data-page="posts.html" data-requires-auth><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg><span>Publicaciones</span></a></li>
+          <li><a class="sidebar-link" href="device.html" data-page="device.html" data-requires-auth><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg><span>Mi Dispositivo (ESP32)</span><span class="dev-badge sidebar-badge">En desarrollo</span></a></li>
+          <li><a class="sidebar-link" href="chat.html" data-page="chat.html" data-requires-auth><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/></svg><span>Chat Comunitario</span></a></li>
+          <li><a class="sidebar-link" href="help.html" data-page="help.html"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/></svg><span>Centro de Ayuda</span></a></li>
+          <li><a class="sidebar-link" href="settings.html" data-page="settings.html" data-requires-auth><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h8M16 6h4M4 12h4M12 12h8M4 18h10M18 18h2"/><circle cx="14" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></svg><span>Configuración de Cuenta</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button type="button" id="sidebar-logout" class="sidebar-link sidebar-logout" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Cerrar Sesión</span></button>
+    </div>
+  </aside>
+
+  <div class="page-wrapper">
+        <header class="navbar">
+      <div class="navbar-left">
+                <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Abrir menú lateral">
+          <span class="menu-bar"></span><span class="menu-bar"></span><span class="menu-bar"></span>
+        </button>
+        <a class="brand" href="index.html" aria-label="KivoLink, ir al inicio">
+          <img class="brand-logo-img" src="assets/logo.png" alt="" width="40" height="32" />
+          <span>KivoLink</span>
+        </a>
+      </div>
+
+      <nav id="primary-nav" class="nav-links" aria-label="Navegación principal">
+        <a class="nav-link" href="index.html">Inicio</a>
+        <a class="nav-link" href="index.html#features">Características</a>
+        <a class="nav-link" href="index.html#impact">Impacto</a>
+        <a class="nav-link" href="index.html#ai">Inteligencia Artificial</a>
+                <div id="notif-wrap" class="notif-wrap" hidden>
+          <button id="notif-btn" class="btn-theme notif-btn" type="button" aria-expanded="false" aria-controls="notif-panel" aria-label="Notificaciones">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+            <span id="notif-badge" class="notif-badge" hidden>0</span>
+          </button>
+          <section id="notif-panel" class="notif-panel" aria-label="Panel de notificaciones" hidden>
+            <header class="notif-head">
+              <h2>Notificaciones</h2>
+              <button type="button" id="notif-readall" class="btn-soft">Marcar todas como leídas</button>
+            </header>
+            <ul id="notif-list" class="notif-list"></ul>
+            <p id="notif-empty" class="notif-empty" hidden>No tienes notificaciones nuevas.</p>
+            <p class="notif-demo">Son avisos de ejemplo.</p>
+          </section>
+        </div>
+                <div id="nav-user-slot" class="nav-user-slot"></div>
+        <button id="theme-toggle" class="btn-theme" type="button" aria-pressed="false" aria-label="Cambiar a modo claro">☀️</button>
+      </nav>
+    </header>
+
+        <main id="main-content">
+      <header class="page-header anim-load">
+        <p class="page-eyebrow">Hardware <span class="dev-badge">En desarrollo</span></p>
+        <h1 class="page-title" data-scramble>Mi Dispositivo</h1>
+        <p class="page-lead">Conecta tu guante, mira cómo está en tiempo real y ajusta los sensores de cada dedo. Por ahora funciona como simulador.</p>
+      </header>
+
+            <div class="dev-banner" role="note">
+        <span class="dev-badge">En desarrollo</span>
+        <p>El guante físico todavía se está construyendo. Por ahora esta página funciona como un <strong>simulador</strong>: usa el "Modo demostración" para ver cómo será.</p>
+      </div>
+
+      <div class="device-grid">
+        <div class="stack">
+                    <section class="panel" aria-labelledby="status-title">
+            <h2 id="status-title" class="visually-hidden">Estado de conexión</h2>
+            <div id="status-hero" class="status-hero" data-state="disconnected">
+              <div class="status-orb"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.5 7.5l11 9-5.5 4.5V3l5.5 4.5-11 9"/></svg></div>
+              <div>
+                                <p id="status-label" class="status-label" role="status" aria-live="polite">Desconectado</p>
+                <p class="status-hint"><span class="dev-badge">En desarrollo</span></p>
+                <p id="status-detail" class="status-detail">Enciende tu guante y pulsa "Emparejar por Bluetooth".</p>
+              </div>
+            </div>
+            <div class="device-actions">
+              <button type="button" id="btn-ble" class="btn-primary">Emparejar por Bluetooth</button>
+              <button type="button" id="btn-demo" class="btn-soft">Modo demostración</button>
+              <button type="button" id="btn-disconnect" class="btn-soft is-danger" hidden>Desconectar</button>
+            </div>
+            <dl class="metrics">
+              <div class="metric"><dt>Señal</dt><dd id="metric-rssi">—</dd></div>
+              <div class="metric"><dt>Batería</dt><dd id="metric-battery">—</dd></div>
+              <div class="metric"><dt>Rapidez</dt><dd id="metric-latency">—</dd></div>
+              <div class="metric"><dt>Versión</dt><dd id="metric-firmware">—</dd></div>
+            </dl>
+          </section>
+
+                    <section class="panel" aria-labelledby="calib-title">
+            <h2 id="calib-title" class="panel-title">Ajuste de los sensores <span class="dev-badge">En desarrollo</span></h2>
+            <p class="panel-sub">Guía rápida: 1) conecta el guante · 2) guarda la mano abierta · 3) guarda el puño cerrado. Cada paso dura 3 segundos.</p>
+            <ul class="sensor-list" aria-label="Lecturas en vivo de cada dedo">
+            <li class="sensor">
+              <span id="sensor-name-0">Pulgar</span>
+              <span class="sensor-track" id="sensor-bar-0" role="progressbar" aria-labelledby="sensor-name-0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="sensor-fill" id="sensor-fill-0"></span></span>
+              <span class="sensor-value" id="sensor-value-0">0%</span>
+            </li>
+            <li class="sensor">
+              <span id="sensor-name-1">Índice</span>
+              <span class="sensor-track" id="sensor-bar-1" role="progressbar" aria-labelledby="sensor-name-1" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="sensor-fill" id="sensor-fill-1"></span></span>
+              <span class="sensor-value" id="sensor-value-1">0%</span>
+            </li>
+            <li class="sensor">
+              <span id="sensor-name-2">Medio</span>
+              <span class="sensor-track" id="sensor-bar-2" role="progressbar" aria-labelledby="sensor-name-2" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="sensor-fill" id="sensor-fill-2"></span></span>
+              <span class="sensor-value" id="sensor-value-2">0%</span>
+            </li>
+            <li class="sensor">
+              <span id="sensor-name-3">Anular</span>
+              <span class="sensor-track" id="sensor-bar-3" role="progressbar" aria-labelledby="sensor-name-3" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="sensor-fill" id="sensor-fill-3"></span></span>
+              <span class="sensor-value" id="sensor-value-3">0%</span>
+            </li>
+            <li class="sensor">
+              <span id="sensor-name-4">Meñique</span>
+              <span class="sensor-track" id="sensor-bar-4" role="progressbar" aria-labelledby="sensor-name-4" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="sensor-fill" id="sensor-fill-4"></span></span>
+              <span class="sensor-value" id="sensor-value-4">0%</span>
+            </li>
+            </ul>
+            <div class="calib-steps">
+              <button type="button" id="btn-capture-open" class="btn-soft" disabled>1 · Guardar mano abierta</button>
+              <button type="button" id="btn-capture-fist" class="btn-soft" disabled>2 · Guardar puño cerrado</button>
+              <button type="button" id="btn-calib-reset" class="btn-soft is-danger">Restablecer</button>
+            </div>
+            <p class="panel-sub" style="margin-top:16px">Estado: <span id="calib-state" class="pill">Sin ajustar</span></p>
+            <table class="calib-table">
+              <caption class="visually-hidden">Valores de cada dedo con la mano abierta y con el puño</caption>
+              <thead><tr><th scope="col">Dedo</th><th scope="col">Mano abierta</th><th scope="col">Puño cerrado</th></tr></thead>
+              <tbody id="calib-body"></tbody>
+            </table>
+          </section>
+        </div>
+
+        <div class="stack">
+                    <section class="panel dev-system" aria-labelledby="pair-title">
+            <div class="dev-system-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" focusable="false"><circle class="wave w1" cx="24" cy="24" r="6"/><circle class="wave w2" cx="24" cy="24" r="12"/><circle class="wave w3" cx="24" cy="24" r="18"/><circle class="core" cx="24" cy="24" r="3"/></svg>
+            </div>
+            <h2 id="pair-title" class="panel-title">Sistema de Conexión en Desarrollo <span class="dev-badge">En desarrollo</span></h2>
+            <p class="dev-system-text">Nuestro equipo está investigando cómo conectar el guante con tu celular o computadora sin cables. Estamos estudiando las mejores formas de comunicación inalámbrica y, cuando estén listas, las vas a poder usar desde aquí.</p>
+            <p class="note">Mientras tanto, usa el <strong>Modo demostración</strong> de arriba para ver cómo se verán la batería y los gestos traducidos.</p>
+          </section>
+
+                    <section class="panel" aria-labelledby="wifi-title">
+            <h2 id="wifi-title" class="panel-title">Conexión Wi-Fi <span class="dev-badge">En desarrollo</span></h2>
+            <p class="panel-sub">Se puede usar cuando el guante está conectado.</p>
+            <form id="wifi-form" class="form" action="device_wifi.php" method="POST" autocomplete="off">
+              <div class="form-group">
+                <label for="wifi-ssid">Nombre de tu Wi-Fi</label>
+                <input type="text" id="wifi-ssid" name="wifi_ssid" maxlength="32" required aria-required="true" />
+              </div>
+              <div class="field-row">
+                <div class="form-group">
+                  <label for="wifi-security">Tipo de clave</label>
+                  <select id="wifi-security" name="wifi_security">
+                    <option value="wpa2">Con clave (lo normal)</option>
+                    <option value="open">Sin clave</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="wifi-password">Clave del Wi-Fi</label>
+                  <input type="password" id="wifi-password" name="wifi_password" minlength="8" maxlength="63" autocomplete="off" required aria-required="true" />
+                </div>
+              </div>
+              <button type="submit" id="btn-wifi-send" class="btn-primary" disabled>Enviar al guante</button>
+            </form>
+            <ol id="provision-list" class="provision" aria-live="polite">
+              <li>Enviando la clave al guante</li>
+              <li>Conectando a tu Wi-Fi</li>
+              <li>Entrando a internet</li>
+              <li>Todo listo</li>
+            </ol>
+          </section>
+        </div>
+      </div>
+    
+            <section class="panel history-panel" aria-labelledby="history-title">
+        <h2 id="history-title" class="panel-title">Historial de uso <span class="dev-badge">En desarrollo</span></h2>
+        <p class="panel-sub">Son datos de ejemplo para mostrar cómo se verá tu historial.</p>
+        <div class="history-stats">
+          <article class="mini-stat"><p class="mini-label">Gestos traducidos</p><p class="mini-value"><span data-count="1248">6767</span></p><p class="mini-note">en esta semana</p></article>
+          <article class="mini-stat"><p class="mini-label">Palabras formadas</p><p class="mini-value"><span data-count="312">676</span></p><p class="mini-note">en esta semana</p></article>
+          <article class="mini-stat"><p class="mini-label">Tiempo de uso</p><p class="mini-value"><span data-count="12">67</span><small>horas</small></p><p class="mini-note">en esta semana</p></article>
+          <article class="mini-stat mini-battery">
+            <svg class="ring" viewBox="0 0 44 44" aria-hidden="true" focusable="false"><circle class="ring-bg" cx="22" cy="22" r="18"/><circle id="battery-ring" class="ring-fill" cx="22" cy="22" r="18" pathLength="100" stroke-dasharray="94 100"/></svg>
+            <div><p class="mini-label">Batería del guante</p><p class="mini-value"><span id="history-battery">67</span>%</p></div>
+          </article>
+        </div>
+        <div class="history-grid">
+          <div>
+            <h3 class="history-sub">Gestos por día</h3>
+            <div class="week-chart" role="img" aria-label="Gestos traducidos por día: lunes 120, martes 180, miércoles 150, jueves 210, viernes 260, sábado 190, domingo 138">
+              <div class="week-bar"><span class="week-fill" style="--h:46%"></span><span class="week-day">Lun</span></div>
+              <div class="week-bar"><span class="week-fill" style="--h:69%"></span><span class="week-day">Mar</span></div>
+              <div class="week-bar"><span class="week-fill" style="--h:58%"></span><span class="week-day">Mié</span></div>
+              <div class="week-bar"><span class="week-fill" style="--h:81%"></span><span class="week-day">Jue</span></div>
+              <div class="week-bar"><span class="week-fill" style="--h:100%"></span><span class="week-day">Vie</span></div>
+              <div class="week-bar"><span class="week-fill" style="--h:73%"></span><span class="week-day">Sáb</span></div>
+              <div class="week-bar"><span class="week-fill" style="--h:53%"></span><span class="week-day">Dom</span></div>
+            </div>
+          </div>
+          <div>
+            <h3 class="history-sub">Historial de ajustes</h3>
+            <ol id="calib-history" class="history-list"></ol>
+          </div>
+        </div>
+      </section>
+    </main>
+
+        <footer class="footer">
+            <script src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js" defer></script>
+      <div class="footer-panel">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="brand" href="index.html" aria-label="KivoLink, ir al inicio"><img class="brand-logo-img" src="assets/logo.png" alt="" width="40" height="32" /><span>KivoLink</span></a>
+            <p>Un guante inteligente y barato que convierte las señas en voz y texto al instante.</p>
+            <ul class="social-list">
+              <li><a class="social-link is-brand" href="https://www.instagram.com/kivolink.fatima/" target="_blank" rel="noopener noreferrer" aria-label="Instagram del proyecto KivoLink @kivolink.fatima (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@kivolink.fatima</span></a></li>
+            </ul>
+          </div>
+
+          <nav aria-label="Explorar">
+            <h2 class="footer-title">Explorar</h2>
+            <ul class="footer-list">
+              <li><a href="index.html#features">Características</a></li>
+              <li><a href="index.html#impact">Impacto social</a></li>
+              <li><a href="index.html#ai">Inteligencia Artificial</a></li>
+              <li><a href="index.html#cases">Casos de éxito</a></li>
+            </ul>
+          </nav>
+
+          <nav aria-label="Comunidad y soporte">
+            <h2 class="footer-title">Plataforma</h2>
+            <ul class="footer-list">
+              <li><a href="posts.html">Publicaciones</a></li>
+              <li><a href="chat.html">Chat Comunitario</a></li>
+              <li><a href="device.html">Mi Dispositivo</a></li>
+              <li><a href="help.html">Centro de Ayuda</a></li>
+            </ul>
+          </nav>
+
+          <nav aria-label="Información legal">
+            <h2 class="footer-title">Legal</h2>
+            <ul class="footer-list">
+                            <li><a href="#" data-soon="Políticas de Privacidad">Políticas de Privacidad</a></li>
+              <li><a href="#" data-soon="Términos de Servicio">Términos de Servicio</a></li>
+              <li class="footer-note">Todos los derechos reservados - KivoLink</li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="footer-social">
+          <h2 class="footer-title">Equipo de desarrollo</h2>
+          <ul class="social-list">
+            <li><a class="social-link" href="https://www.instagram.com/frcqce__/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @frcqce__ (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@frcqce__</span></a></li>
+            <li><a class="social-link" href="https://www.instagram.com/leandrooo_ooo777/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @leandrooo_ooo777 (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@leandrooo_ooo777</span></a></li>
+            <li><a class="social-link" href="https://www.instagram.com/valentincrak09/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @valentincrak09 (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@valentincrak09</span></a></li>
+            <li><a class="social-link" href="https://www.instagram.com/roman.ct.24/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @roman.ct.24 (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@roman.ct.24</span></a></li>
+            <li><a class="social-link" href="https://www.instagram.com/ban0hxb7mlmpmhlrv/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @ban0hxb7mlmpmhlrv (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@ban0hxb7mlmpmhlrv</span></a></li>
+          </ul>
+        </div>
+
+        <div class="footer-bottom">
+          <p>© 2026 KivoLink. Todos los derechos reservados.</p>
+          <p>Tecnología inclusiva de bajo costo, hecha con la comunidad.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+    <script src="js/core.js" defer></script>
+  <script src="js/fx.js" defer></script>
+  <script src="js/effects.js" defer></script>
+  <script src="js/notifications.js" defer></script>
+  <script src="js/device.js" defer></script>
+</body>
+</html>

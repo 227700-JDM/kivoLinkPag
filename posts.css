@@ -1,0 +1,32 @@
+/* posts.css — Estilos de la página de publicaciones. */
+.feed-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.composer { display: grid; gap: 14px; }
+.composer-head { display: flex; gap: 14px; align-items: flex-start; }
+.composer-head textarea { min-height: 96px; }
+.composer-bar { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; }
+.composer-bar select { padding: 10px 14px; background: var(--color-surface-2); color: var(--color-text); border: 1px solid var(--color-card-border); border-radius: 999px; font-size: 14px; }
+
+.filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 16px; }
+.feed { list-style: none; display: grid; gap: 16px; }
+.post-card { padding: 22px 24px; }
+.post-head { display: flex; align-items: center; gap: 12px; }
+.post-author { font-family: var(--font-heading); font-weight: 600; line-height: 1.2; }
+.post-meta { font-size: 12.5px; color: var(--color-text-muted); }
+.post-head .pill { margin-left: auto; }
+.post-body { margin: 14px 0 16px; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--color-text-secondary); }
+.post-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 14px; border-top: 1px solid var(--color-glass-border); }
+.post-actions .btn-soft { padding: 7px 14px; font-size: 13px; }
+.comments { margin-top: 14px; display: grid; gap: 12px; }
+.comment { display: flex; gap: 10px; padding: 10px 12px; background: var(--color-surface-2); border-radius: var(--radius-sm); }
+.comment .avatar-sm { width: 32px; height: 32px; font-size: 13px; }
+.comment-name { font-weight: 600; font-size: 13.5px; }
+.comment-text { font-size: 14px; color: var(--color-text-secondary); overflow-wrap: anywhere; }
+.comment-form { display: flex; gap: 10px; }
+.comment-form input { flex: 1; min-width: 0; padding: 10px 16px; background: var(--color-surface-2); color: var(--color-text); border: 1px solid var(--color-card-border); border-radius: 999px; font-size: 14px; }
+.comment-form input:focus-visible { outline: 2px solid transparent; border-color: var(--color-focus); box-shadow: 0 0 0 4px var(--color-accent-glow); animation: none; }
+.demo-note { font-size: 12.5px; color: var(--color-text-muted); }
+.aside-list { list-style: none; display: grid; gap: 12px; font-size: 14px; color: var(--color-text-secondary); }
+.aside-list li { display: flex; gap: 10px; }
+.aside-list li::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 8px; border-radius: 50%; background: var(--color-accent); }
+@media (max-width: 960px) { .feed-layout { grid-template-columns: 1fr; } }
+.composer-field { flex: 1; min-width: 0; }

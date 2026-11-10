@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KivoLink — Traducción de Lenguaje de Señas</title>
+  <meta name="description" content="Guante inteligente de bajo costo que transforma el lenguaje de señas en voz y texto en tiempo real." />
+  <meta name="theme-color" content="#090b0f" />
+  <link rel="icon" href="assets/logo.png" />
+
+    <script>try{if(localStorage.getItem('kivolink_theme')!=='light')document.documentElement.classList.add('dark-mode')}catch(e){document.documentElement.classList.add('dark-mode')}try{if(sessionStorage.getItem('kv_curtain'))document.documentElement.classList.add('curtain-cover')}catch(e){}try{var p=JSON.parse(localStorage.getItem('kivolink_prefs')||'{}');if(p.largeText)document.documentElement.classList.add('pref-large-text');if(p.highContrast)document.documentElement.classList.add('pref-contrast');if(p.calm)document.documentElement.classList.add('pref-calm');if(p.accent&&p.accent!=='neon')document.documentElement.setAttribute('data-accent',p.accent)}catch(e){}try{var h=document.documentElement;if(sessionStorage.getItem('welcome_screen_viewed')==='true'||sessionStorage.getItem('kv_curtain')){h.classList.add('splash-seen')}else{h.classList.add('splash-lock','splash-hold');window.__splashFallback=setTimeout(function(){h.classList.remove('splash-lock','splash-hold');h.classList.add('splash-seen')},20000)}}catch(e){}document.documentElement.classList.add('js')</script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/fx.css" />
+</head>
+<body>
+    <div class="curtain" aria-hidden="true">
+    <span class="curtain-layer"><svg class="curtain-edge" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg><svg class="curtain-edge curtain-edge-back" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg></span>
+    <span class="curtain-layer"><svg class="curtain-edge" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg><svg class="curtain-edge curtain-edge-back" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg></span>
+    <span class="curtain-layer"><svg class="curtain-edge" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg><svg class="curtain-edge curtain-edge-back" viewBox="0 0 100 1000" preserveAspectRatio="none" focusable="false"><path d="M0 0 L55 0 C95 120 15 260 70 400 S100 640 40 760 S75 920 55 1000 L0 1000 Z"/></svg></span>
+  </div>
+
+    <div id="splash" class="splash" role="dialog" aria-modal="true" aria-label="Bienvenida a KivoLink">
+    <div class="splash-glow"></div>
+    <div class="splash-sparks" id="splash-sparks"></div>
+    <div class="splash-content">
+      <p class="splash-title">Bienvenido a KivoLink</p>
+      <p class="splash-subtitle">Tecnología inclusiva para un mundo sin barreras</p>
+      <span class="splash-line"></span>
+      <span class="splash-scan"></span>
+    </div>
+    <p class="splash-hint">Toca la pantalla para comenzar</p>
+        <button type="button" id="splash-enter" class="splash-enter" aria-label="Entrar a KivoLink. Toca la pantalla para comenzar"></button>
+    <svg class="splash-edge" viewBox="0 0 1000 100" preserveAspectRatio="none" focusable="false" aria-hidden="true"><path d="M0 0 H1000 V30 C 880 100, 760 0, 620 50 S 380 100, 240 40 S 60 90, 0 30 Z"/></svg>
+  </div>
+
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <canvas id="particles" class="particles" aria-hidden="true"></canvas>
+
+    <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+
+    <audio id="bg-music" src="assets/audio/tiki.mp3" loop preload="none"></audio>
+  <button id="music-toggle" class="music-toggle" type="button" aria-pressed="false" aria-label="Encender la música de fondo">
+    <span class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+  </button>
+
+    <div id="sidebar-backdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+  <aside id="sidebar" class="sidebar" aria-label="Menú lateral" inert>
+    <div class="sidebar-top">
+      <span class="sidebar-title">Menú</span>
+      <button type="button" id="sidebar-close" class="sidebar-close" aria-label="Cerrar menú lateral">✕</button>
+    </div>
+
+        <section class="sidebar-profile" aria-label="Perfil del usuario">
+      <a href="dashboard.html" id="sidebar-avatar-box" class="sidebar-avatar" aria-label="Ver mi perfil">
+        <span id="sidebar-avatar" aria-hidden="true">?</span>
+        <i class="status-dot" aria-hidden="true"></i>
+      </a>
+      <div class="sidebar-user">
+        <p id="sidebar-name" class="sidebar-name">Invitado</p>
+        <p id="sidebar-status" class="sidebar-status">No conectado</p>
+      </div>
+    </section>
+
+        <div id="sidebar-guest" class="sidebar-guest" hidden>
+      <a class="btn-primary" href="login.html">Iniciar sesión</a>
+      <a class="btn-outline" href="register.html">Crear cuenta</a>
+    </div>
+
+    <nav aria-label="Secciones de la plataforma">
+      <p class="sidebar-group-title">Plataforma</p>
+      <ul class="sidebar-list">
+          <li><a class="sidebar-link" href="index.html" data-page="index.html"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Inicio</span></a></li>
+          <li><button type="button" id="sidebar-notif" class="sidebar-link" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span>Notificaciones</span><span id="sidebar-notif-count" class="sidebar-count" hidden>0</span></button></li>
+          <li><a class="sidebar-link" href="posts.html" data-page="posts.html" data-requires-auth><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg><span>Publicaciones</span></a></li>
+          <li><a class="sidebar-link" href="device.html" data-page="device.html" data-requires-auth><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg><span>Mi Dispositivo (ESP32)</span><span class="dev-badge sidebar-badge">En desarrollo</span></a></li>
+          <li><a class="sidebar-link" href="chat.html" data-page="chat.html" data-requires-auth><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/></svg><span>Chat Comunitario</span></a></li>
+          <li><a class="sidebar-link" href="help.html" data-page="help.html"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/></svg><span>Centro de Ayuda</span></a></li>
+          <li><a class="sidebar-link" href="settings.html" data-page="settings.html" data-requires-auth><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h8M16 6h4M4 12h4M12 12h8M4 18h10M18 18h2"/><circle cx="14" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></svg><span>Configuración de Cuenta</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button type="button" id="sidebar-logout" class="sidebar-link sidebar-logout" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Cerrar Sesión</span></button>
+    </div>
+  </aside>
+
+  <div class="page-wrapper">
+        <header class="navbar">
+      <div class="navbar-left">
+                <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Abrir menú lateral">
+          <span class="menu-bar"></span><span class="menu-bar"></span><span class="menu-bar"></span>
+        </button>
+        <a class="brand" href="index.html" aria-label="KivoLink, ir al inicio">
+          <img class="brand-logo-img" src="assets/logo.png" alt="" width="40" height="32" />
+          <span>KivoLink</span>
+        </a>
+      </div>
+
+      <nav id="primary-nav" class="nav-links" aria-label="Navegación principal">
+        <a class="nav-link" href="index.html" aria-current="page">Inicio</a>
+        <a class="nav-link" href="index.html#features">Características</a>
+        <a class="nav-link" href="index.html#impact">Impacto</a>
+        <a class="nav-link" href="index.html#ai">Inteligencia Artificial</a>
+                <div id="notif-wrap" class="notif-wrap" hidden>
+          <button id="notif-btn" class="btn-theme notif-btn" type="button" aria-expanded="false" aria-controls="notif-panel" aria-label="Notificaciones">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+            <span id="notif-badge" class="notif-badge" hidden>0</span>
+          </button>
+          <section id="notif-panel" class="notif-panel" aria-label="Panel de notificaciones" hidden>
+            <header class="notif-head">
+              <h2>Notificaciones</h2>
+              <button type="button" id="notif-readall" class="btn-soft">Marcar todas como leídas</button>
+            </header>
+            <ul id="notif-list" class="notif-list"></ul>
+            <p id="notif-empty" class="notif-empty" hidden>No tienes notificaciones nuevas.</p>
+            <p class="notif-demo">Son avisos de ejemplo.</p>
+          </section>
+        </div>
+                <div id="nav-user-slot" class="nav-user-slot"></div>
+        <button id="theme-toggle" class="btn-theme" type="button" aria-pressed="false" aria-label="Cambiar a modo claro">☀️</button>
+      </nav>
+    </header>
+
+        <main id="main-content">
+
+            <section class="hero-card" id="home" aria-labelledby="hero-title">
+        <div class="hero-glow" aria-hidden="true"></div>
+
+                <svg class="hero-deco" data-draw viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <path pathLength="1" d="M-20 380 C 150 300, 300 460, 480 360 S 720 250, 840 300"/>
+          <path pathLength="1" class="soft" d="M-20 430 C 170 350, 330 510, 520 410 S 740 300, 840 350"/>
+          <path pathLength="1" d="M-20 120 C 160 60, 320 190, 520 110 S 740 40, 840 90"/>
+          <path pathLength="1" class="soft" d="M-20 170 C 180 110, 340 240, 540 160 S 760 90, 840 140"/>
+        </svg>
+        <div>
+          <span class="hero-eyebrow anim-load" data-scramble>Guante Tecnológico Inclusivo</span>
+          <h1 class="hero-title anim-load delay-1" id="hero-title" data-scramble>KivoLink</h1>
+          <p class="hero-description anim-load delay-2" data-scramble="type">
+            Un guante inteligente y de bajo precio que convierte el lenguaje de señas en voz y texto al instante. Hecho para que todas las personas puedan comunicarse sin barreras.
+          </p>
+                    <div class="hero-actions anim-load delay-3">
+                        <a id="hero-cta" class="btn-primary" href="register.html">Comenzar Ahora</a>
+            <a class="btn-outline" href="#technology">Ver cómo es</a>
+          </div>
+        </div>
+
+                <div class="glove-stage anim-load delay-4" aria-hidden="true">
+                    <div class="lottie-slot" data-lottie="assets/lottie/hero-glove.json"></div>
+          <div class="glove-3d" id="glove-model">
+            <div class="glove-shadow"></div>
+            <div class="glove-wrist"><span class="glove-screen">CONECTADO</span></div>
+            <div class="glove-palm">
+              <i class="sensor-led s1"></i>
+              <i class="sensor-led s2"></i>
+              <i class="sensor-led s3"></i>
+            </div>
+            <div class="finger thumb"><b></b><b></b></div>
+            <div class="finger f1"><b></b><b></b><b></b></div>
+            <div class="finger f2"><b></b><b></b><b></b></div>
+            <div class="finger f3"><b></b><b></b><b></b></div>
+            <div class="finger f4"><b></b><b></b><b></b></div>
+          </div>
+        </div>
+      </section>
+
+            <section id="features" aria-labelledby="features-title">
+        <h2 id="features-title" class="visually-hidden">Características principales</h2>
+        <div class="features-grid">
+        <article class="reveal feature-card">
+          <h3 class="feature-heading">
+            <button type="button" id="feature-btn-1" class="feature-header" aria-expanded="false" aria-controls="feature-panel-1">
+              <span class="feature-title-wrap">
+                <span class="feature-icon" aria-hidden="true">◎</span>
+                <span>El Control</span>
+              </span>
+              <span class="feature-toggle-icon" aria-hidden="true">+</span>
+            </button>
+          </h3>
+          <div id="feature-panel-1" class="feature-body" role="region" aria-labelledby="feature-btn-1">
+            <p>Mueve los dedos con libertad. El guante convierte cada movimiento en palabras, casi al instante.</p>
+            <div class="chips">
+              <span class="chip">Gestos</span>
+              <span class="chip">Precisión</span>
+              <span class="chip">Voz al instante</span>
+            </div>
+          </div>
+        </article>
+        <article class="reveal feature-card">
+          <h3 class="feature-heading">
+            <button type="button" id="feature-btn-2" class="feature-header" aria-expanded="false" aria-controls="feature-panel-2">
+              <span class="feature-title-wrap">
+                <span class="feature-icon" aria-hidden="true">♡</span>
+                <span>Diseño Cómodo</span>
+              </span>
+              <span class="feature-toggle-icon" aria-hidden="true">+</span>
+            </button>
+          </h3>
+          <div id="feature-panel-2" class="feature-body" role="region" aria-labelledby="feature-btn-2">
+            <p>Tela suave, liviana y fresca. Pensada para usarla todo el día sin cansarte ni sudar.</p>
+            <div class="chips">
+              <span class="chip">Cómodo</span>
+              <span class="chip">Fresco</span>
+              <span class="chip">Flexible</span>
+            </div>
+          </div>
+        </article>
+        <article class="reveal feature-card">
+          <h3 class="feature-heading">
+            <button type="button" id="feature-btn-3" class="feature-header" aria-expanded="false" aria-controls="feature-panel-3">
+              <span class="feature-title-wrap">
+                <span class="feature-icon" aria-hidden="true">⌂</span>
+                <span>Accesible para todos</span>
+              </span>
+              <span class="feature-toggle-icon" aria-hidden="true">+</span>
+            </button>
+          </h3>
+          <div id="feature-panel-3" class="feature-body" role="region" aria-labelledby="feature-btn-3">
+            <p>Usamos piezas sencillas para bajar el precio, sin perder calidad.</p>
+            <div class="chips">
+              <span class="chip">Económico</span>
+              <span class="chip">Sin Barreras</span>
+            </div>
+          </div>
+        </article>
+        <article class="reveal feature-card">
+          <h3 class="feature-heading">
+            <button type="button" id="feature-btn-4" class="feature-header" aria-expanded="false" aria-controls="feature-panel-4">
+              <span class="feature-title-wrap">
+                <span class="feature-icon" aria-hidden="true">⚡</span>
+                <span>Alta Calibración</span>
+              </span>
+              <span class="feature-toggle-icon" aria-hidden="true">+</span>
+            </button>
+          </h3>
+          <div id="feature-panel-4" class="feature-body" role="region" aria-labelledby="feature-btn-4">
+            <p>Sensores muy sensibles que notan hasta los movimientos más pequeños de tus dedos.</p>
+            <div class="chips">
+              <span class="chip">Exacto</span>
+              <span class="chip">Muy sensible</span>
+            </div>
+          </div>
+        </article>
+        </div>
+      </section>
+
+            <section class="reveal mission-section" aria-label="Nuestra misión">
+        <p class="mission-quote">"La comunicación no debe ser un lujo. Creamos este guante que conecta a las personas sin importar los limites."</p>
+      </section>
+
+            <section class="specs-section" id="technology" aria-labelledby="technology-title">
+        <div class="reveal section-header">
+          <p class="section-eyebrow">Metas de diseño</p>
+          <h2 class="section-title" id="technology-title" data-scramble>Lo que tiene el guante</h2>
+          <p class="section-lead"><span class="dev-badge">En desarrollo</span> Estas son las metas del diseño. El guante físico todavía se está construyendo y aún no está a la venta.</p>
+        </div>
+        <div class="specs-grid">
+          <article class="reveal spec-card">
+            <span class="spec-icon" aria-hidden="true">⚡</span>
+            <h3>Traduce al instante</h3>
+            <p></p>
+            <p class="spec-status"><span class="dev-badge">En desarrollo</span></p>
+          </article>
+          <article class="reveal spec-card">
+            <span class="spec-icon" aria-hidden="true">🔋</span>
+            <h3>Bateria de muchas horas</h3>
+            <p></p>
+            <p class="spec-status"><span class="dev-badge">En desarrollo</span></p>
+          </article>
+          <article class="reveal spec-card">
+            <span class="spec-icon" aria-hidden="true">📡</span>
+            <h3>Conexión sin cables</h3>
+            <p></p>
+            <p class="spec-status"><span class="dev-badge">En desarrollo</span></p>
+          </article>
+          <article class="reveal spec-card">
+            <span class="spec-icon" aria-hidden="true">🎛️</span>
+            <h3>Hazlo tuyo</h3>
+            <p></p>
+            <p class="spec-status"><span class="dev-badge">En desarrollo</span></p>
+          </article>
+        </div>
+      </section>
+
+            <section class="content-section" id="impact" aria-labelledby="impact-title">
+        <div class="reveal section-header">
+          <p class="section-eyebrow">Impacto social</p>
+          <h2 class="section-title" id="impact-title" data-scramble>Tecnología barata, ayuda real</h2>
+          <p class="section-lead">Comunicarse no debería depender del dinero. KivoLink usa piezas sencillas y baratas para ofrecer una opción al alcance de todas las personas.</p>
+        </div>
+                <div class="stats-grid">
+          <article class="reveal stat-card"><p class="stat-number"><span data-count="15">15</span><small>ms</small></p><p class="stat-label">Tiempo que buscamos entre el gesto y la voz</p></article>
+          <article class="reveal stat-card"><p class="stat-number"><span data-count="18">3</span><small>h</small></p><p class="stat-label">Horas de batería que buscamos</p></article>
+          <article class="reveal stat-card"><p class="stat-number"><span data-count="5">5</span><small>sensores</small></p><p class="stat-label">Uno por cada dedo de la mano</p></article>
+          <article class="reveal stat-card"><p class="stat-number"><span data-count="1">1</span><small>ESP32</small></p><p class="stat-label">Un pequeño cerebro, barato y fácil de conseguir</p></article>
+        </div>
+        <div class="impact-grid">
+          <article class="reveal impact-card"><span class="impact-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1 0-2-.5-2.5-1.5M12 6.5v1.5M12 16v1.5"/></svg></span><h3>Costo accesible</h3><p>Usamos piezas fáciles de conseguir para bajar el precio y llegar a quienes más lo necesitan.</p></article>
+          <article class="reveal impact-card"><span class="impact-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg></span><h3>Pensado para el día a día</h3><p>Un guante liviano y fresco, con batería para todo el día. Se ajusta en pocos minutos y se usa con normalidad.</p></article>
+          <article class="reveal impact-card"><span class="impact-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 14.5c3 0 6 1.6 6 5.5"/></svg></span><h3>Una comunidad que se apoya</h3><p>Familias, usuarios y pueden compartir ideas y ayudarse entre sí.</p></article>
+        </div>
+      </section>
+
+            <section class="content-section" id="ai" aria-labelledby="ai-title">
+        <div class="reveal section-header">
+          <p class="section-eyebrow">Inteligencia artificial</p>
+          <h2 class="section-title" id="ai-title" data-scramble>¿Cómo entiende el guante tus señas?</h2>
+          <p class="section-lead">De los movimientos de tus dedos a una frase en voz alta, en cinco pasos sencillos.</p>
+        </div>
+        <ol class="pipeline">
+          <li class="reveal ai-step"><span class="ai-step-index" aria-hidden="true">1</span><h3>Captura</h3><p>El guante mide cómo se doblan tus dedos muchas veces por segundo.</p></li>
+          <li class="reveal ai-step"><span class="ai-step-index" aria-hidden="true">2</span><h3>Limpieza</h3><p>Se quitan las lecturas raras y se ajustan a tu mano.</p></li>
+          <li class="reveal ai-step"><span class="ai-step-index" aria-hidden="true">3</span><h3>Reconocimiento</h3><p>Un programa que aprende reconoce qué seña hiciste.</p></li>
+          <li class="reveal ai-step"><span class="ai-step-index" aria-hidden="true">4</span><h3>Texto</h3><p>La seña se convierte en una palabra o una frase.</p></li>
+          <li class="reveal ai-step"><span class="ai-step-index" aria-hidden="true">5</span><h3>Voz</h3><p>El guante dice el mensaje en voz alta.</p></li>
+        </ol>
+        <p class="ai-note">Este programa puede funcionar dentro de tu celular, sin internet, para cuidar tu privacidad.</p>
+      </section>
+
+            <section class="steps-section" id="how-it-works" aria-labelledby="how-title">
+        <div class="reveal section-header">
+          <p class="section-eyebrow">Tres sencillos pasos</p>
+          <h2 class="section-title" id="how-title" data-scramble>¿Cómo funciona KivoLink?</h2>
+        </div>
+        <ol class="steps-grid">
+          <li class="reveal step-card">
+            <span class="step-number" aria-hidden="true">01</span>
+            <h3>Enciéndelo y ajústalo</h3>
+            <p>Ponte el guante, prende el botón y abre la mano 3 segundos para que se ajuste a ti.</p>
+          </li>
+          <li class="reveal step-card">
+            <span class="step-number" aria-hidden="true">02</span>
+            <h3>Haz tus señas</h3>
+            <p>Usa las señas como siempre. El guante nota cómo mueves los dedos.</p>
+          </li>
+          <li class="reveal step-card">
+            <span class="step-number" aria-hidden="true">03</span>
+            <h3>Escucha y lee</h3>
+            <p>El guante dice la frase en voz alta y el texto aparece al instante en tu celular.</p>
+          </li>
+        </ol>
+      </section>
+            <section class="content-section" id="cases" aria-labelledby="cases-title">
+        <div class="reveal section-header">
+          <p class="section-eyebrow">Casos de éxito</p>
+          <h2 class="section-title" id="cases-title" data-scramble>Historias de la comunidad</h2>
+          <p class="section-lead">Ejemplos que muestran el tipo de impacto que buscamos construir junto a los brochachos de la comunidad.</p>
+        </div>
+        <div class="cases-grid">
+          <article class="reveal case-card"><span class="pill example-tag">Ejemplo</span><blockquote><p>“Poder practicar en casa, a mi ritmo y sin un costo imposible, cambió la forma en que nos comunicamos en familia.”</p></blockquote><div class="case-person"><span class="avatar-sm tone-blue" aria-hidden="true">G</span><div><p class="case-name">GiovasElTrava</p><p class="case-role">Familiar de una persona usuaria</p></div></div></article>
+          <article class="reveal case-card"><span class="pill example-tag">Ejemplo</span><blockquote><p>“Ajustar el guante fue sencillo. En pocos minutos ya respondía a mis gestos con naturalidad.”</p></blockquote><div class="case-person"><span class="avatar-sm " aria-hidden="true">M</span><div><p class="case-name">MiguelElMasCapito</p><p class="case-role">Persona usuaria del prototipo</p></div></div></article>
+          <article class="reveal case-card"><span class="pill example-tag">Ejemplo</span><blockquote><p>“Poder probar ideas nuevas nos ayuda a mejorar el guante para toda la comunidad.”</p></blockquote><div class="case-person"><span class="avatar-sm tone-gray" aria-hidden="true">C</span><div><p class="case-name">Calsoki</p><p class="case-role">Investigador en accesibilidad</p></div></div></article>
+        </div>
+      </section>
+
+            <section class="reveal cta-band" aria-labelledby="cta-title">
+        <h2 id="cta-title">Sé parte de la comunidad KivoLink</h2>
+        <p>Crea tu cuenta para compartir novedades, conversar con otras personas y ajustar tu guante.</p>
+        <a class="btn-primary" href="register.html">Crear mi cuenta</a>
+      </section>
+    </main>
+
+        <footer class="footer">
+            <script src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js" defer></script>
+      <div class="footer-panel">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="brand" href="index.html" aria-label="KivoLink, ir al inicio"><img class="brand-logo-img" src="assets/logo.png" alt="" width="40" height="32" /><span>KivoLink</span></a>
+            <p>Un guante inteligente y barato que convierte las señas en voz y texto al instante.</p>
+            <ul class="social-list">
+              <li><a class="social-link is-brand" href="https://www.instagram.com/kivolink.fatima/" target="_blank" rel="noopener noreferrer" aria-label="Instagram del proyecto KivoLink @kivolink.fatima (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@kivolink.fatima</span></a></li>
+            </ul>
+          </div>
+
+          <nav aria-label="Explorar">
+            <h2 class="footer-title">Explorar</h2>
+            <ul class="footer-list">
+              <li><a href="index.html#features">Características</a></li>
+              <li><a href="index.html#impact">Impacto social</a></li>
+              <li><a href="index.html#ai">Inteligencia Artificial</a></li>
+              <li><a href="index.html#cases">Casos de éxito</a></li>
+            </ul>
+          </nav>
+
+          <nav aria-label="Comunidad y soporte">
+            <h2 class="footer-title">Plataforma</h2>
+            <ul class="footer-list">
+              <li><a href="posts.html">Publicaciones</a></li>
+              <li><a href="chat.html">Chat Comunitario</a></li>
+              <li><a href="device.html">Mi Dispositivo</a></li>
+              <li><a href="help.html">Centro de Ayuda</a></li>
+            </ul>
+          </nav>
+
+          <nav aria-label="Información legal">
+            <h2 class="footer-title">Legal</h2>
+            <ul class="footer-list">
+                            <li><a href="#" data-soon="Políticas de Privacidad">Políticas de Privacidad</a></li>
+              <li><a href="#" data-soon="Términos de Servicio">Términos de Servicio</a></li>
+              <li class="footer-note">Todos los derechos reservados - KivoLink</li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="footer-social">
+          <h2 class="footer-title">Equipo de desarrollo</h2>
+          <ul class="social-list">
+            <li><a class="social-link" href="https://www.instagram.com/frcqce__/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @frcqce__ (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@frcqce__</span></a></li>
+            <li><a class="social-link" href="https://www.instagram.com/leandrooo_ooo777/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @leandrooo_ooo777 (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@leandrooo_ooo777</span></a></li>
+            <li><a class="social-link" href="https://www.instagram.com/valentincrak09/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @valentincrak09 (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@valentincrak09</span></a></li>
+            <li><a class="social-link" href="https://www.instagram.com/roman.ct.24/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @roman.ct.24 (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@roman.ct.24</span></a></li>
+            <li><a class="social-link" href="https://www.instagram.com/ban0hxb7mlmpmhlrv/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @ban0hxb7mlmpmhlrv (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@ban0hxb7mlmpmhlrv</span></a></li>
+          </ul>
+        </div>
+
+        <div class="footer-bottom">
+          <p>© 2026 KivoLink. Todos los derechos reservados.</p>
+          <p>Tecnología inclusiva de bajo costo, hecha para la comunidad.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+    <script src="js/core.js" defer></script>
+  <script src="js/fx.js" defer></script>
+  <script src="js/effects.js" defer></script>
+  <script src="js/notifications.js" defer></script>
+  <script src="js/splash.js" defer></script>
+  <script src="js/home.js" defer></script>
+</body>
+</html>

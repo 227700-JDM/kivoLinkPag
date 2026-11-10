@@ -1,0 +1,108 @@
+/* device.css — Estilos de "Mi Dispositivo": conexión, Wi-Fi, ajuste de sensores e historial. */
+.device-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.status-hero { display: flex; align-items: center; gap: 20px; }
+.status-orb { position: relative; width: 72px; height: 72px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--color-surface-2); border: 1px solid var(--color-glass-border); }
+.status-orb svg { width: 30px; height: 30px; fill: none; stroke: var(--color-text-muted); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.status-orb::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid transparent; }
+.status-hero[data-state="scanning"] .status-orb::after, .status-hero[data-state="connecting"] .status-orb::after { border-color: var(--color-accent-2); animation: orb-pulse 1.2s ease-out infinite; }
+.status-hero[data-state="connected"] .status-orb { background: rgba(52, 211, 153, 0.14); border-color: var(--color-success); }
+.status-hero[data-state="connected"] .status-orb svg { stroke: var(--color-success); }
+.status-hero[data-state="connected"] .status-orb::after { border-color: var(--color-success); animation: orb-pulse 2.4s ease-out infinite; }
+@keyframes orb-pulse { from { transform: scale(0.9); opacity: 0.9; } to { transform: scale(1.35); opacity: 0; } }
+.status-label { font-family: var(--font-heading); font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+.status-detail { font-size: 14px; color: var(--color-text-muted); }
+.device-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 22px; }
+.metric { padding: 14px; background: var(--color-surface-2); border-radius: var(--radius-sm); }
+.metric dt { font-size: 11.5px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.metric dd { margin-top: 2px; font-family: var(--font-heading); font-size: 20px; font-weight: 600; }
+
+.pair-steps { list-style: none; counter-reset: step; display: grid; gap: 14px; }
+.pair-steps li { counter-increment: step; position: relative; padding-left: 46px; font-size: 14.5px; color: var(--color-text-secondary); }
+.pair-steps li::before { content: counter(step); position: absolute; left: 0; top: -2px; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--color-surface-2); border: 1px solid var(--color-glass-border); font-family: var(--font-heading); font-weight: 700; color: var(--color-text); }
+.pair-steps strong { color: var(--color-text); }
+
+.provision { display: grid; gap: 4px; margin-top: 16px; list-style: none; }
+.provision li { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 14px; color: var(--color-text-muted); }
+.provision li::before { content: ""; width: 14px; height: 14px; flex: none; border-radius: 50%; border: 2px solid var(--color-card-border); }
+.provision li.is-active { color: var(--color-text); }
+.provision li.is-active::before { border-color: var(--color-accent-2); border-top-color: transparent; animation: spin 0.8s linear infinite; }
+.provision li.is-done { color: var(--color-success); }
+.provision li.is-done::before { background: var(--color-success); border-color: var(--color-success); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Calibración: barras de sensores en vivo */
+.sensor-list { list-style: none; display: grid; gap: 14px; margin-bottom: 20px; }
+.sensor { display: grid; grid-template-columns: 74px minmax(0, 1fr) 46px; align-items: center; gap: 12px; font-size: 14px; }
+.sensor-track { height: 10px; overflow: hidden; border-radius: 10px; background: var(--color-surface-2); }
+.sensor-fill { display: block; height: 100%; width: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--color-accent-2), var(--color-accent)); transform-origin: left; transform: scaleX(0); transition: transform 0.25s ease; }
+.sensor-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--color-text-muted); }
+.calib-steps { display: flex; flex-wrap: wrap; gap: 10px; }
+.calib-table { width: 100%; margin-top: 18px; border-collapse: collapse; font-size: 13.5px; }
+.calib-table th, .calib-table td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--color-glass-border); }
+.calib-table th { font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-muted); }
+
+.code-wrap { position: relative; margin-top: 14px; }
+.code-block { overflow-x: auto; padding: 18px; background: #0b0d12; color: #d7e3ff; border: 1px solid var(--color-glass-border); border-radius: var(--radius-md); font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.code-copy { position: absolute; top: 10px; right: 10px; }
+.checklist { list-style: none; display: grid; gap: 10px; font-size: 14.5px; color: var(--color-text-secondary); }
+.checklist li { display: flex; gap: 10px; }
+.checklist li::before { content: "✓"; color: var(--color-success); font-weight: 700; }
+.note { margin-top: 16px; padding: 12px 16px; font-size: 13.5px; color: var(--color-text-secondary); background: var(--color-surface-2); border-left: 3px solid var(--color-accent-2); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+
+@media (max-width: 960px) { .device-grid { grid-template-columns: 1fr; } .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+
+/* ==========================================================================
+   AVISO "EN DESARROLLO" E HISTORIAL DE USO (datos de ejemplo)
+   ========================================================================== */
+.dev-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 20px; padding: 14px 18px; font-size: 14.5px; border-radius: var(--radius-md); background: var(--color-warn-bg); border: 1px solid var(--color-warn-border); color: var(--color-text-secondary); }
+.dev-banner .dev-badge { margin-left: 0; }
+.pair-steps .dev-badge { margin-left: 10px; }
+.status-hint { margin-bottom: 4px; }
+.status-hint .dev-badge { margin-left: 0; }
+
+.history-panel { margin-top: 18px; }
+.history-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 26px; }
+.mini-stat { padding: 18px; background: var(--color-surface-2); border: 1px solid var(--color-glass-border); border-radius: var(--radius-md); }
+.mini-label { font-size: 12.5px; color: var(--color-text-muted); }
+.mini-value { font-family: var(--font-heading); font-size: 34px; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+.mini-value small { margin-left: 6px; font-size: 13px; font-weight: 500; color: var(--color-text-muted); }
+.mini-note { font-size: 12px; color: var(--color-text-muted); }
+.mini-battery { display: flex; align-items: center; gap: 14px; }
+.ring { width: 64px; height: 64px; flex: none; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 4; }
+.ring-bg { stroke: var(--color-card-border); }
+.ring-fill { stroke: var(--color-accent-2); stroke-linecap: round; transition: stroke-dasharray 0.6s ease; }
+
+.history-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 28px; }
+.history-sub { margin-bottom: 14px; font-family: var(--font-heading); font-size: 15px; font-weight: 600; }
+.week-chart { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; height: 180px; padding: 6px 4px 0; }
+.week-bar { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; height: 100%; }
+.week-fill { width: 100%; max-width: 36px; height: var(--h); border-radius: 10px 10px 4px 4px; background: linear-gradient(to top, var(--color-accent-2), var(--color-accent)); transform-origin: bottom; animation: bar-grow 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.week-bar:nth-child(2) .week-fill { animation-delay: 0.06s; } .week-bar:nth-child(3) .week-fill { animation-delay: 0.12s; } .week-bar:nth-child(4) .week-fill { animation-delay: 0.18s; }
+.week-bar:nth-child(5) .week-fill { animation-delay: 0.24s; } .week-bar:nth-child(6) .week-fill { animation-delay: 0.3s; } .week-bar:nth-child(7) .week-fill { animation-delay: 0.36s; }
+@keyframes bar-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.week-day { font-size: 12px; color: var(--color-text-muted); }
+.history-list { list-style: none; display: grid; gap: 10px; }
+.history-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--color-surface-2); border-radius: 14px; }
+.history-when { flex: 1; font-size: 14px; }
+.history-when small { display: block; font-size: 12px; color: var(--color-text-muted); }
+.quality { padding: 3px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--color-surface-2); border: 1px solid var(--color-glass-border); }
+.quality-great { color: var(--color-success); } .quality-good { color: var(--color-accent-ink); } .quality-ok { color: var(--color-warn); }
+@media (max-width: 960px) { .history-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .history-grid { grid-template-columns: 1fr; } }
+
+/* ----- Tarjeta "Sistema de Conexión en Desarrollo" ----- */
+.dev-system { text-align: center; padding: 38px 28px; }
+.dev-system .panel-title { margin: 14px 0 12px; }
+.dev-system .dev-badge { display: inline-flex; margin: 8px 0 0 0; }
+.dev-system-icon { width: 78px; height: 78px; margin: 0 auto; }
+.dev-system-icon svg { width: 100%; height: 100%; }
+.dev-system-icon circle { fill: none; stroke: var(--color-accent-ink); stroke-width: 1.6; }
+.dev-system-icon .core { fill: var(--color-accent); stroke: none; }
+.dev-system-icon .wave { transform-origin: center; animation: wave-out 2.4s ease-out infinite; }
+.dev-system-icon .w2 { animation-delay: 0.6s; } .dev-system-icon .w3 { animation-delay: 1.2s; }
+@keyframes wave-out { 0% { opacity: 0.9; transform: scale(0.5); } 100% { opacity: 0; transform: scale(1.1); } }
+.dev-system-text { max-width: 46ch; margin: 0 auto 4px; color: var(--color-text-secondary); font-size: 15px; }
+.dev-system .note { text-align: left; }

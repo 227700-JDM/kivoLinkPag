@@ -1,0 +1,244 @@
+/* fx.css — Efectos bonitos. Se carga al final en todas las páginas.
+   Aquí están: el efecto de vidrio, las tarjetas que brillan al pasar el mouse, las líneas
+   que se dibujan solas, la cortina entre páginas, la pantalla de bienvenida,
+   el fondo de partículas, el mouse especial y el botón de música. */
+
+/* ==========================================================================
+   1. TIPOGRAFÍA MODERNA (Space Grotesk para títulos, Inter para lectura)
+   ========================================================================== */
+.hero-title, .section-title, .form-header h1, .form-header h2, .promo-panel h2,
+.modal-title, .telemetry-title, .danger-title, .profile-name, .page-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-transform: none;
+  font-style: normal;
+}
+.hero-title { font-size: clamp(54px, 8.5vw, 104px); line-height: 0.95; color: var(--color-text); }
+.hero-eyebrow, .section-eyebrow {
+  font-family: var(--font-heading); font-style: normal; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; font-size: 13px; color: var(--color-accent-ink);
+}
+.hero-eyebrow::before, .section-eyebrow::before { content: none; }
+.section-header { text-align: center; }
+/* Pequeña barra de energía bajo los títulos de sección (único toque neón) */
+.section-header::after {
+  content: ""; display: block; width: 44px; height: 4px; margin: 16px auto 0;
+  background: var(--color-accent); border-radius: 4px; box-shadow: 0 0 14px var(--color-accent-glow);
+}
+.form-header h1 { font-size: clamp(28px, 4vw, 38px); }
+
+/* ==========================================================================
+   2. EFECTO VIDRIO (tarjetas)
+   Fondo semitransparente con un borde de luz arriba, que cambia con el tema.
+   OJO: aquí NO se usa desenfoque real (backdrop-filter). Con partículas moviéndose detrás,
+   el navegador tenía que desenfocar todas las tarjetas en cada cuadro y la página se ponía lenta.
+   Así se ve igual de elegante y va fluida a 60 cuadros por segundo.
+   ========================================================================== */
+.hero-card, .feature-card, .spec-card, .step-card, .mission-section, .auth-card, .profile-card,
+.modal-card, .telemetry-box, .panel, .stat-card, .case-card, .ai-step, .impact-card, .post-card, .chat-shell {
+  position: relative;
+  background: var(--color-glass-bg);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 18px 44px var(--color-shadow), inset 0 1px 0 var(--color-glass-edge);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease,
+              background-color 0.3s ease, color 0.3s ease;
+}
+.telemetry-box { border-radius: var(--radius-md); }
+@media (prefers-reduced-transparency: reduce) {
+  :root { --glass-blur: 0px; }
+  .navbar, .sidebar, .footer-panel, .notif-panel { background: var(--color-card-bg); }
+}
+
+/* ==========================================================================
+   3. HOVER SUAVE EN TARJETAS: elevación + borde luminoso + foco de luz que
+   sigue al cursor (--mx / --my los actualiza fx.js)
+   ========================================================================== */
+.feature-card::after, .spec-card::after, .step-card::after, .stat-card::after, .case-card::after, .impact-card::after, .post-card::after {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; border-radius: inherit; opacity: 0;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.1), transparent 60%);
+  transition: opacity 0.3s ease;
+}
+/* El efecto al pasar el mouse solo se usa con mouse (en el celular quedaría "pegado" después de tocar) */
+@media (hover: hover) {
+  .feature-card:hover, .spec-card:hover, .step-card:hover, .stat-card:hover, .case-card:hover, .impact-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-accent-ink);
+    box-shadow: 0 26px 56px var(--color-shadow), 0 0 0 1px var(--color-glass-border);
+  }
+}
+.feature-card:hover::after, .spec-card:hover::after, .step-card:hover::after, .stat-card:hover::after, .case-card:hover::after, .impact-card:hover::after, .post-card:hover::after { opacity: 1; }
+.feature-card > *, .spec-card > *, .step-card > *, .stat-card > *, .case-card > *, .impact-card > *, .post-card > * { position: relative; z-index: 1; }
+
+/* Insignias suaves (ya no neón) */
+.badge, .badge-plan, .badge-status { border-radius: 999px; font-family: var(--font-body); font-weight: 600; letter-spacing: 0.02em; text-transform: none; }
+.badge-plan { background: var(--color-surface-2); color: var(--color-accent-ink); border: 1px solid var(--color-glass-border); }
+.step-number { color: var(--color-text); opacity: 0.08; font-family: var(--font-heading); }
+
+/* ==========================================================================
+   4. HERO Y TRAZOS SVG (dibujo de líneas)
+   Cada trazo lleva pathLength="1" → dibujo de líneas/offset = 1 sirve para cualquier longitud.
+   ========================================================================== */
+.hero-card > :not(.hero-deco):not(.hero-glow) { position: relative; z-index: 2; }
+.hero-deco { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.7; }
+.hero-glow { background: radial-gradient(circle, var(--color-accent-glow) 0%, transparent 70%); }
+.hero-deco path { fill: none; stroke: var(--color-accent-ink); stroke-width: 1.2; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: 0.55; }
+.hero-deco .soft { stroke: var(--color-text-muted); opacity: 0.4; }
+.js [data-draw] path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.js [data-draw].is-drawn path { animation: draw-stroke 1.8s cubic-bezier(0.65, 0, 0.35, 1) forwards; animation-delay: calc(var(--i, 0) * 0.12s); }
+@keyframes draw-stroke { to { stroke-dashoffset: 0; } }
+@keyframes redraw-stroke { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.brand:hover [data-draw] path { animation: redraw-stroke 0.9s ease forwards; }
+.glove-screen { background: #05070a; color: var(--color-accent); border-color: rgba(var(--primary-rgb), 0.4); box-shadow: 0 0 10px var(--color-accent-glow); }
+
+/* ==========================================================================
+   5. TRANSICIÓN LÍQUIDA ENTRE PÁGINAS (cortina) — la anima fx.js
+   (sin clase) fuera a la izquierda · .is-closing cubre · html.curtain-cover ya cubierta
+   al cargar · .is-opening sale por la derecha.
+   ========================================================================== */
+.curtain { position: fixed; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden; }
+.curtain-layer { position: absolute; inset: 0; transform: translateX(calc(-100% - 16vw)); will-change: transform; }
+.curtain-layer:nth-child(1) { color: #8ab4ff; }
+.curtain-layer:nth-child(2) { color: var(--primary-color); }
+.curtain-layer:nth-child(3) { color: #0b0d12; }
+.curtain-layer::before { content: ""; position: absolute; inset: 0; background: currentColor; }
+.curtain-edge { position: absolute; top: 0; left: 100%; width: 16vw; height: 100%; fill: currentColor; display: block; }
+.curtain-edge-back { left: auto; right: 100%; transform: scaleX(-1); }
+.curtain.is-closing .curtain-layer { transform: translateX(0); transition: transform 0.6s cubic-bezier(0.77, 0, 0.18, 1); }
+.curtain.is-closing .curtain-layer:nth-child(2) { transition-delay: 0.07s; }
+.curtain.is-closing .curtain-layer:nth-child(3) { transition-delay: 0.14s; }
+html.curtain-cover .curtain-layer { transform: translateX(0); transition: none; animation: curtain-safety 0s 3.5s forwards; }
+@keyframes curtain-safety { to { transform: translateX(calc(100% + 16vw)); } }   /* red de seguridad si el JS falla */
+.curtain.is-opening .curtain-layer { transform: translateX(calc(100% + 16vw)); transition: transform 0.65s cubic-bezier(0.77, 0, 0.18, 1); animation: none; }
+.curtain.is-opening .curtain-layer:nth-child(2) { transition-delay: 0.08s; }
+.curtain.is-opening .curtain-layer:nth-child(1) { transition-delay: 0.16s; }
+
+/* ==========================================================================
+   6. CONTENEDORES PARA LOTTIE Y WEBP
+   ========================================================================== */
+.lottie-slot { position: absolute; inset: -8%; z-index: 0; display: grid; place-items: center; pointer-events: none; }
+.lottie-slot lottie-player { width: 100%; height: 100%; }
+.lottie-inline { position: relative; inset: auto; width: 140px; height: 120px; margin-bottom: 18px; }
+.wave-art { width: 160px; height: 90px; }
+.wave-art path { fill: none; stroke: var(--color-accent-ink); stroke-width: 2; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.media-frame { display: block; overflow: hidden; border-radius: var(--radius-lg); }
+.media-frame img { display: block; width: 100%; height: auto; }
+
+/* ==========================================================================
+   7. MOVIMIENTO REDUCIDO
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .bg-grid::before, .bg-grid::after { animation: none; }
+  .js [data-draw] path { stroke-dashoffset: 0; animation: none; }
+  .curtain { display: none; }
+}
+html.pref-calm .curtain { display: none; }
+html.pref-calm .js [data-draw] path, html.pref-calm [data-draw] path { stroke-dashoffset: 0; }
+
+
+/* ==========================================================================
+   8. PANTALLA DE BIENVENIDA (solo la primera vez de cada visita; se levanta al tocar la pantalla)
+   Texto con brillo, destello de luz, luces que suben y una cortina que se
+   desliza hacia arriba con borde ondulado. Mientras está activa no se puede
+   hacer scroll (clase splash-lock en <html>).
+   ========================================================================== */
+html.splash-lock, html.splash-lock body { overflow: hidden; }
+html.splash-hold .anim-load { animation-play-state: paused; }      /* la portada espera a que la cortina suba */
+html.splash-seen .splash { display: none; }                        /* ya se vio: no se muestra */
+
+.splash {
+  position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center;
+  background: radial-gradient(ellipse at 50% 38%, #111823 0%, #070a0f 55%, #05070a 100%);
+  color: #ffffff; will-change: transform;
+  transition: transform 1s cubic-bezier(0.77, 0, 0.18, 1);
+}
+.splash.is-leaving { transform: translateY(calc(-100% - 16vh)); }  /* sube como una cortina líquida */
+.splash-edge { position: absolute; left: 0; top: 100%; width: 100%; height: 16vh; fill: #05070a; display: block; }
+
+.splash-glow {
+  position: absolute; width: min(70vw, 640px); aspect-ratio: 1; border-radius: 50%; filter: blur(30px);
+  background: radial-gradient(circle, rgba(var(--primary-rgb), 0.28), rgba(138, 180, 255, 0.12) 45%, transparent 70%);
+  animation: splash-flash 3.6s ease-out both;
+}
+@keyframes splash-flash { 0% { opacity: 0; transform: scale(0.3); } 35% { opacity: 1; transform: scale(1); } 100% { opacity: 0.45; transform: scale(1.25); } }
+
+.splash-content { position: relative; overflow: hidden; padding: 20px 28px; text-align: center; }
+.splash-title {
+  font-family: var(--font-heading); font-weight: 700; font-size: clamp(34px, 6.5vw, 84px); letter-spacing: -0.03em; line-height: 1.05;
+  background: linear-gradient(100deg, #fff 0%, #fff 38%, var(--primary-color) 50%, #fff 62%, #fff 100%);
+  background-size: 260% 100%; background-position: 100% 0;
+  -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
+  animation: splash-title-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both, splash-shine 3s ease-in-out 1s forwards;
+}
+@keyframes splash-title-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); filter: blur(10px); }
+  to   { opacity: 1; transform: none; filter: blur(0) drop-shadow(0 0 22px rgba(255, 255, 255, 0.25)); }
+}
+@keyframes splash-shine { from { background-position: 100% 0; } to { background-position: 0% 0; } }
+.splash-subtitle { margin-top: 18px; font-size: clamp(14px, 2vw, 22px); letter-spacing: 0.02em; color: #b9c0cc; animation: splash-sub-in 1.2s ease 1.7s both; }
+@keyframes splash-sub-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.splash-line { display: block; width: min(260px, 60vw); height: 2px; margin: 30px auto 0; background: linear-gradient(90deg, transparent, var(--primary-color), transparent); transform: scaleX(0); animation: splash-line 3.2s ease 0.7s forwards; }
+@keyframes splash-line { to { transform: scaleX(1); } }
+.splash-scan { position: absolute; top: 0; bottom: 0; left: 0; width: 30%; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent); transform: translateX(-120%); animation: splash-scan 2.6s ease-in-out 1s both; }
+@keyframes splash-scan { to { transform: translateX(420%); } }
+/* Mensaje que parpadea suave para invitar a tocar */
+.splash-hint { position: absolute; bottom: max(12vh, 64px); padding: 0 24px; text-align: center; font-size: clamp(13px, 1.8vw, 17px); letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 255, 255, 0.75); animation: splash-sub-in 1s ease 2.2s both, splash-blink 2.6s ease-in-out 3.3s infinite; }
+@keyframes splash-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+/* Botón invisible que ocupa toda la pantalla (clic, toque y teclado) */
+.splash-enter { position: absolute; inset: 0; z-index: 5; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.splash-enter:focus-visible { outline: none; animation: none; }
+/* El marco de enfoque solo se muestra si la persona usa el teclado (clase kbd) */
+.splash.kbd .splash-enter:focus-visible { outline: 3px solid var(--primary-color); outline-offset: -10px; }
+
+/* Luces pequeñas que suben (las crea js/splash.js) */
+.splash-sparks { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.splash-spark { position: absolute; bottom: -12px; left: var(--x); width: var(--s); height: var(--s); border-radius: 50%; background: rgba(255, 255, 255, 0.7); opacity: 0; animation: spark-rise var(--d) linear var(--delay) infinite; }
+.splash-spark:nth-child(4n) { background: rgba(var(--primary-rgb), 0.8); }
+@keyframes spark-rise { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: 0.8; } 100% { transform: translate(var(--dx), -110vh); opacity: 0; } }
+
+/* ==========================================================================
+   9. FONDO DE PARTÍCULAS Y MOUSE ESPECIAL
+   ========================================================================== */
+.particles { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+html.pref-calm .particles { display: none; }
+
+/* Mouse especial: solo se mueve con translate3d (lo hace la tarjeta gráfica, sin esfuerzo).
+   El tamaño no se cambia: se usa "scale" dentro del dibujo, y no hay desenfoque (era lo más pesado). */
+.cursor-dot, .cursor-ring { position: fixed; left: 0; top: 0; width: 0; height: 0; z-index: 11000; pointer-events: none; opacity: 0; will-change: transform; transition: opacity 0.2s ease; }
+.cursor-dot::before { content: ""; position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--color-accent); box-shadow: 0 0 10px var(--color-accent); }
+.cursor-ring::before {
+  content: ""; position: absolute; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%;
+  border: 1.5px solid var(--color-text); background: rgba(255, 255, 255, 0.08);
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+html.has-custom-cursor .cursor-dot, html.has-custom-cursor .cursor-ring { opacity: 1; }
+html.has-custom-cursor, html.has-custom-cursor * { cursor: none !important; }
+/* Sobre cajas de texto se muestra el cursor normal para poder escribir bien */
+html.has-custom-cursor input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), html.has-custom-cursor textarea { cursor: text !important; }
+html.has-custom-cursor .cursor-dot.is-hidden, html.has-custom-cursor .cursor-ring.is-hidden { opacity: 0; }
+.cursor-ring.is-active::before { transform: scale(1.55); border-color: var(--color-accent); background: var(--color-accent-glow); }
+.cursor-ring.is-down::before { transform: scale(0.7); }
+
+/* ==========================================================================
+   10. BOTÓN FLOTANTE DE MÚSICA
+   ========================================================================== */
+.music-toggle {
+  position: fixed; right: 20px; bottom: 20px; z-index: 150; width: 52px; height: 52px; display: grid; place-items: center;
+  color: var(--color-text); background: var(--color-glass-bg); border: 1px solid var(--color-glass-border); border-radius: 50%;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 10px 30px var(--color-shadow);
+  transition: transform 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+.music-toggle:hover { transform: scale(1.08); }
+.music-toggle[aria-pressed="true"] { border-color: var(--color-accent); box-shadow: 0 10px 30px var(--color-shadow), 0 0 18px var(--color-accent-glow); }
+.music-bars { display: flex; align-items: flex-end; gap: 3px; height: 18px; opacity: 0.6; }
+.music-bars i { width: 3px; height: 100%; border-radius: 2px; background: currentColor; transform: scaleY(0.3); transform-origin: bottom; }
+.music-toggle[aria-pressed="true"] .music-bars { opacity: 1; }
+.music-toggle[aria-pressed="true"] .music-bars i { animation: music-eq 0.9s ease-in-out infinite; }
+.music-bars i:nth-child(2) { animation-delay: 0.15s !important; } .music-bars i:nth-child(3) { animation-delay: 0.3s !important; } .music-bars i:nth-child(4) { animation-delay: 0.45s !important; }
+@keyframes music-eq { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+@media (max-width: 720px) { .music-toggle { width: 44px; height: 44px; bottom: 84px; right: 14px; } }
+
+@media (pointer: coarse) { .splash-glow { filter: none; } .splash-scan { display: none; } }
+@media (prefers-reduced-motion: reduce) { .particles { display: none; } .splash-hint { animation: none; } }
+html.pref-calm .splash-hint { animation: none; }
