@@ -6,7 +6,7 @@
   <title>KivoLink — Traducción de Lenguaje de Señas</title>
   <meta name="description" content="Guante inteligente de bajo costo que transforma el lenguaje de señas en voz y texto en tiempo real." />
   <meta name="theme-color" content="#090b0f" />
-  <link rel="icon" href="assets/logo.png" />
+  <link rel="icon" href="logo.png" />
 
     <script>try{if(localStorage.getItem('kivolink_theme')!=='light')document.documentElement.classList.add('dark-mode')}catch(e){document.documentElement.classList.add('dark-mode')}try{if(sessionStorage.getItem('kv_curtain'))document.documentElement.classList.add('curtain-cover')}catch(e){}try{var p=JSON.parse(localStorage.getItem('kivolink_prefs')||'{}');if(p.largeText)document.documentElement.classList.add('pref-large-text');if(p.highContrast)document.documentElement.classList.add('pref-contrast');if(p.calm)document.documentElement.classList.add('pref-calm');if(p.accent&&p.accent!=='neon')document.documentElement.setAttribute('data-accent',p.accent)}catch(e){}try{var h=document.documentElement;if(sessionStorage.getItem('welcome_screen_viewed')==='true'||sessionStorage.getItem('kv_curtain')){h.classList.add('splash-seen')}else{h.classList.add('splash-lock','splash-hold');window.__splashFallback=setTimeout(function(){h.classList.remove('splash-lock','splash-hold');h.classList.add('splash-seen')},20000)}}catch(e){}document.documentElement.classList.add('js')</script>
 
@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/home.css" />
-  <link rel="stylesheet" href="css/fx.css" />
+    <link rel="stylesheet" href="base.css" />
+  <link rel="stylesheet" href="home.css" />
+  <link rel="stylesheet" href="fx.css" />
 </head>
 <body>
     <div class="curtain" aria-hidden="true">
@@ -48,7 +48,7 @@
     <div class="cursor-dot" aria-hidden="true"></div>
   <div class="cursor-ring" aria-hidden="true"></div>
 
-    <audio id="bg-music" src="assets/audio/tiki.mp3" loop preload="none"></audio>
+    <audio id="bg-music" src="tiki.mp3" loop preload="none"></audio>
   <button id="music-toggle" class="music-toggle" type="button" aria-pressed="false" aria-label="Encender la música de fondo">
     <span class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
   </button>
@@ -101,7 +101,7 @@
           <span class="menu-bar"></span><span class="menu-bar"></span><span class="menu-bar"></span>
         </button>
         <a class="brand" href="index.html" aria-label="KivoLink, ir al inicio">
-          <img class="brand-logo-img" src="assets/logo.png" alt="" width="40" height="32" />
+          <img class="brand-logo-img" src="logo.png" alt="" width="40" height="32" />
           <span>KivoLink</span>
         </a>
       </div>
@@ -374,7 +374,7 @@
       <div class="footer-panel">
         <div class="footer-grid">
           <div class="footer-brand">
-            <a class="brand" href="index.html" aria-label="KivoLink, ir al inicio"><img class="brand-logo-img" src="assets/logo.png" alt="" width="40" height="32" /><span>KivoLink</span></a>
+            <a class="brand" href="index.html" aria-label="KivoLink, ir al inicio"><img class="brand-logo-img" src="logo.png" alt="" width="40" height="32" /><span>KivoLink</span></a>
             <p>Un guante inteligente y barato que convierte las señas en voz y texto al instante.</p>
             <ul class="social-list">
               <li><a class="social-link is-brand" href="https://www.instagram.com/kivolink.fatima/" target="_blank" rel="noopener noreferrer" aria-label="Instagram del proyecto KivoLink @kivolink.fatima (se abre en una pestaña nueva)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg><span>@kivolink.fatima</span></a></li>
@@ -430,11 +430,11 @@
     </footer>
   </div>
 
-    <script src="js/core.js" defer></script>
-  <script src="js/fx.js" defer></script>
-  <script src="js/effects.js" defer></script>
-  <script src="js/notifications.js" defer></script>
-  <script src="js/splash.js" defer></script>
-  <script src="js/home.js" defer></script>
+    <script src="core.js" defer></script>
+  <script src="fx.js" defer></script>
+  <script src="effects.js" defer></script>
+  <script src="notifications.js" defer></script>
+  <script src="splash.js" defer></script>
+  <script src="home.js" defer></script>
 </body>
 </html>
