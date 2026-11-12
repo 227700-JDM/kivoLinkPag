@@ -411,49 +411,32 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountUp();
 });
 
-// Botón de ayuda contextual en core.js que le envía al robot exactamente qué pantalla es
+// Ajustar posición y estilo del mini robot de Botpress sin tapar el botón de música
 (function() {
-  const crearBotonGuia = () => {
-    if (document.getElementById('kivo-guia-btn')) return;
+  const aplicarEstilosRobot = () => {
+    if (document.getElementById('kivo-botpress-style')) return;
 
-    const btn = document.createElement('button');
-    btn.id = 'kivo-guia-btn';
-    btn.innerText = '🤖 ¿Cómo funciona esta pantalla?';
-    btn.style.cssText = `
-      position: fixed;
-      bottom: 85px;
-      right: 20px;
-      background: #eab308;
-      color: #000;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 13px;
-      cursor: pointer;
-      z-index: 9998;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    `;
-
-    btn.onclick = () => {
-      const pagina = document.title || window.location.pathname;
-      const h1 = document.querySelector('h1')?.innerText || 'Sección principal';
-      
-      if (window.botpress) {
-        window.botpress.open();
-        setTimeout(() => {
-          window.botpress.sendMessage(`Estoy viendo la pantalla "${pagina}" (${h1}). Explícame cómo funciona y qué botones puedo usar aquí.`);
-        }, 500);
+    const style = document.createElement('style');
+    style.id = 'kivo-botpress-style';
+    style.innerHTML = `
+      /* Mover el botón flotante de Botpress a la izquierda del reproductor de música */
+      #bp-web-widget-container, 
+      .bpFab, 
+      iframe[title*="Botpress"],
+      div[data-testid="bp-fab"] {
+        right: 85px !important;
+        bottom: 20px !important;
+        z-index: 9998 !important;
       }
-    };
-
-    document.body.appendChild(btn);
+    `;
+    document.head.appendChild(style);
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', crearBotonGuia);
+    document.addEventListener('DOMContentLoaded', aplicarEstilosRobot);
   } else {
-    crearBotonGuia();
+    aplicarEstilosRobot();
   }
 })();
+
 
