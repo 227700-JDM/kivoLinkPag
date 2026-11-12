@@ -439,4 +439,68 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 })();
 
+//------------------------------------
+
+// =========================================================================
+// INTEGRACIÓN COMPLETA DEL MINI ROBOT GUÍA DE KIVOLINK (BOTPRESS V5.0)
+// =========================================================================
+(function() {
+  // 1. Ajustar posición del chat para que no tape el reproductor de música
+  const style = document.createElement('style');
+  style.innerHTML = `
+    #bp-web-widget-container, .bpFab, iframe[title*="Botpress"], div[data-testid="bp-fab"] {
+      right: 85px !important;
+      bottom: 20px !important;
+      z-index: 9998 !important;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // 2. Si esta página HTML no tiene los scripts en el <head>, cargarlos aquí
+  if (!document.querySelector('script[src*="botpress.cloud"]')) {
+    const s1 = document.createElement('script');
+    s1.src = 'https://botpress.cloud';
+    document.body.appendChild(s1);
+
+    s1.onload = () => {
+      const s2 = document.createElement('script');
+      s2.src = 'https://bpcontent.cloud';
+      document.body.appendChild(s2);
+    };
+  }
+
+  // 3. Escuchar órdenes de navegación y música enviadas por el robot
+  const conectarCerebroWeb = setInterval(() => {
+    if (window.botpress && typeof window.botpress.on === 'function') {
+      clearInterval(conectarCerebroWeb);
+
+      window.botpress.on('message', (mensaje) => {
+        const texto = mensaje?.payload?.text || mensaje?.text || '';
+
+        // Navegar entre tus 9 archivos HTML
+        const matchNavegar = texto.match(/\[NAVEGAR:(.*?)\]/);
+        if (matchNavegar && matchNavegar[1]) {
+          const archivoDestino = matchNavegar[1].trim();
+          setTimeout(() => {
+            window.location.href = archivoDestino;
+          }, 1200);
+        }
+
+        // Activar o pausar tu reproductor de música
+        if (texto.includes('[ACCION:musica]')) {
+          const audio = document.querySelector('audio');
+          if (audio) {
+            audio.paused ? audio.play() : audio.pause();
+          } else {
+            // Si el reproductor es un botón personalizado, busca el botón flotante de la esquina
+            const btnMusica = document.querySelector('[class*="music"], [id*="music"], [class*="audio"], [id*="audio"]');
+            if (btnMusica) btnMusica.click();
+          }
+        }
+      });
+    }
+  }, 400);
+})();
+
+
 
