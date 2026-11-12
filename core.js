@@ -412,25 +412,28 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Avisar al robot de Botpress v5.0 en qué página está el usuario
-window.addEventListener('load', () => {
-  const esperarBotpress = setInterval(() => {
-    if (window.botpress && typeof window.botpress.on === 'function') {
-      clearInterval(esperarBotpress);
-
-      const enviarUbicacion = () => {
-        window.botpress.sendEvent({
-          type: 'custom',
-          payload: {
-            paginaActual: window.location.pathname,
-            tituloPagina: document.title
-          }
-        });
-      };
-
-      // Enviar la ubicación cuando el chat esté listo y cada vez que el usuario lo abra
-      window.botpress.on('webchat:ready', enviarUbicacion);
-      window.botpress.on('webchat:opened', enviarUbicacion);
+(function() {
+  const enviarContextoPantalla = () => {
+    if (window.botpress && typeof window.botpress.sendEvent === 'function') {
+      window.botpress.sendEvent({
+        type: 'custom',
+        payload: {
+          paginaActual: window.location.pathname,
+          tituloPagina: document.title,
+          urlCompleta: window.location.href
+        }
+      });
     }
-  }, 500);
-});
+  };
+
+  // Intentar enviar apenas cargue y cada vez que se abra o se envíe un mensaje
+  const intervalo = setInterval(() => {
+    if (window.botpress && typeof window.botpress.on === 'function') {
+      clearInterval(intervalo);
+      enviarContextoPantalla();
+      window.botpress.on('webchat:opened', enviarContextoPantalla);
+      window.botpress.on('message', enviarContextoPantalla);
+    }
+  }, 300);
+})();
 
