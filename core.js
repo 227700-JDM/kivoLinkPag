@@ -411,29 +411,45 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountUp();
 });
 
-// Avisar al robot de Botpress v5.0 en qué página está el usuario
+// Enviar al robot de Botpress qué página y qué botones/títulos ve el usuario
 (function() {
-  const enviarContextoPantalla = () => {
+  const obtenerResumenPantalla = () => {
+    const titulos = Array.from(document.querySelectorAll('h1, h2'))
+      .map(el => el.innerText.trim())
+      .filter(t => t.length > 0)
+      .slice(0, 5)
+      .join(' | ');
+
+    const botones = Array.from(document.querySelectorAll('a, button'))
+      .map(el => el.innerText.trim())
+      .filter(t => t.length > 1 && t.length < 30)
+      .slice(0, 8)
+      .join(', ');
+
+    return {
+      ruta: window.location.pathname,
+      tituloPagina: document.title,
+      titulosVisibles: titulos,
+      botonesVisibles: botones
+    };
+  };
+
+  const enviarContexto = () => {
     if (window.botpress && typeof window.botpress.sendEvent === 'function') {
       window.botpress.sendEvent({
         type: 'custom',
-        payload: {
-          paginaActual: window.location.pathname,
-          tituloPagina: document.title,
-          urlCompleta: window.location.href
-        }
+        payload: obtenerResumenPantalla()
       });
     }
   };
 
-  // Intentar enviar apenas cargue y cada vez que se abra o se envíe un mensaje
   const intervalo = setInterval(() => {
     if (window.botpress && typeof window.botpress.on === 'function') {
       clearInterval(intervalo);
-      enviarContextoPantalla();
-      window.botpress.on('webchat:opened', enviarContextoPantalla);
-      window.botpress.on('message', enviarContextoPantalla);
+      enviarContexto();
+      window.botpress.on('webchat:opened', enviarContexto);
+      window.botpress.on('message', enviarContexto);
     }
-  }, 300);
+  }, 400);
 })();
 
