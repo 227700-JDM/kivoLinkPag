@@ -411,45 +411,49 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountUp();
 });
 
-// Enviar al robot de Botpress qué página y qué botones/títulos ve el usuario
+// Botón de ayuda contextual en core.js que le envía al robot exactamente qué pantalla es
 (function() {
-  const obtenerResumenPantalla = () => {
-    const titulos = Array.from(document.querySelectorAll('h1, h2'))
-      .map(el => el.innerText.trim())
-      .filter(t => t.length > 0)
-      .slice(0, 5)
-      .join(' | ');
+  const crearBotonGuia = () => {
+    if (document.getElementById('kivo-guia-btn')) return;
 
-    const botones = Array.from(document.querySelectorAll('a, button'))
-      .map(el => el.innerText.trim())
-      .filter(t => t.length > 1 && t.length < 30)
-      .slice(0, 8)
-      .join(', ');
+    const btn = document.createElement('button');
+    btn.id = 'kivo-guia-btn';
+    btn.innerText = '🤖 ¿Cómo funciona esta pantalla?';
+    btn.style.cssText = `
+      position: fixed;
+      bottom: 85px;
+      right: 20px;
+      background: #eab308;
+      color: #000;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+      z-index: 9998;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    `;
 
-    return {
-      ruta: window.location.pathname,
-      tituloPagina: document.title,
-      titulosVisibles: titulos,
-      botonesVisibles: botones
+    btn.onclick = () => {
+      const pagina = document.title || window.location.pathname;
+      const h1 = document.querySelector('h1')?.innerText || 'Sección principal';
+      
+      if (window.botpress) {
+        window.botpress.open();
+        setTimeout(() => {
+          window.botpress.sendMessage(`Estoy viendo la pantalla "${pagina}" (${h1}). Explícame cómo funciona y qué botones puedo usar aquí.`);
+        }, 500);
+      }
     };
+
+    document.body.appendChild(btn);
   };
 
-  const enviarContexto = () => {
-    if (window.botpress && typeof window.botpress.sendEvent === 'function') {
-      window.botpress.sendEvent({
-        type: 'custom',
-        payload: obtenerResumenPantalla()
-      });
-    }
-  };
-
-  const intervalo = setInterval(() => {
-    if (window.botpress && typeof window.botpress.on === 'function') {
-      clearInterval(intervalo);
-      enviarContexto();
-      window.botpress.on('webchat:opened', enviarContexto);
-      window.botpress.on('message', enviarContexto);
-    }
-  }, 400);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', crearBotonGuia);
+  } else {
+    crearBotonGuia();
+  }
 })();
 
