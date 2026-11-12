@@ -469,37 +469,29 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // 3. Escuchar órdenes de navegación y música enviadas por el robot
+    // 3. Detectar si el robot envía un enlace .html y navegar automáticamente
   const conectarCerebroWeb = setInterval(() => {
     if (window.botpress && typeof window.botpress.on === 'function') {
       clearInterval(conectarCerebroWeb);
 
       window.botpress.on('message', (mensaje) => {
         const texto = mensaje?.payload?.text || mensaje?.text || '';
-
-        // Navegar entre tus 9 archivos HTML
-        const matchNavegar = texto.match(/\[NAVEGAR:(.*?)\]/);
-        if (matchNavegar && matchNavegar[1]) {
-          const archivoDestino = matchNavegar[1].trim();
-          setTimeout(() => {
-            window.location.href = archivoDestino;
-          }, 1200);
-        }
-
-        // Activar o pausar tu reproductor de música
-        if (texto.includes('[ACCION:musica]')) {
-          const audio = document.querySelector('audio');
-          if (audio) {
-            audio.paused ? audio.play() : audio.pause();
-          } else {
-            // Si el reproductor es un botón personalizado, busca el botón flotante de la esquina
-            const btnMusica = document.querySelector('[class*="music"], [id*="music"], [class*="audio"], [id*="audio"]');
-            if (btnMusica) btnMusica.click();
+        
+        // Busca cualquier archivo .html mencionado en un enlace del bot (ej. dashboard.html)
+        const matchArchivo = texto.match(/\(([a-zA-Z0-9_-]+\.html)\)/);
+        if (matchArchivo && matchArchivo[1]) {
+          const destino = matchArchivo[1];
+          // Solo redirige si no estamos ya en esa misma página
+          if (!window.location.pathname.endsWith(destino)) {
+            setTimeout(() => {
+              window.location.href = destino;
+            }, 1300);
           }
         }
       });
     }
   }, 400);
+
 })();
 
 
