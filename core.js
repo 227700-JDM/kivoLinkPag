@@ -410,3 +410,33 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initCountUp();
 });
+
+// Cargar el mini robot de Botpress v5.0 en toda la web
+(function() {
+  // 1. Inyectar el motor principal de Botpress
+  const script1 = document.createElement('script');
+  script1.src = 'https://botpress.cloud';
+  document.body.appendChild(script1);
+
+  // 2. Inyectar la configuración específica de tu bot kivoLinkPag
+  script1.onload = function() {
+    const script2 = document.createElement('script');
+    script2.src = 'https://bpcontent.cloud';
+    script2.defer = true;
+    document.body.appendChild(script2);
+
+    // 3. Avisar al robot qué página y título está viendo el usuario
+    script2.onload = function() {
+      if (window.botpress) {
+        window.botpress.on('webchat:ready', () => {
+          window.botpress.updateUser({
+            data: {
+              paginaActual: window.location.pathname,
+              tituloPagina: document.title
+            }
+          });
+        });
+      }
+    };
+  };
+})();
