@@ -411,8 +411,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountUp();
 });
 
-// Cargar el mini robot de Botpress v5.0 en toda la web sin tapar el botón de música
-window.addEventListener('DOMContentLoaded', function() {
+// Cargar el mini robot de Botpress v5.0 en toda la web
+(function() {
   // 1. Inyectar el motor principal de Botpress
   const script1 = document.createElement('script');
   script1.src = 'https://botpress.cloud';
@@ -439,15 +439,15 @@ window.addEventListener('DOMContentLoaded', function() {
     };
   };
 
-  // 4. Ajuste visual para que el robot aparezca a la izquierda del botón de música
+  // 4. Mover el robot un poco a la izquierda para no tapar el botón de música
   const style = document.createElement('style');
   style.innerHTML = `
-    #bp-web-widget-container, .bpFab {
+    #bp-web-widget-container, .bpFab, iframe[title*="Botpress"] {
       right: 85px !important;
       bottom: 20px !important;
       z-index: 9999 !important;
     }
   `;
   document.head.appendChild(style);
-});
+})();
 
