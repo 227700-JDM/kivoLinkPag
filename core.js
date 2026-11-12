@@ -411,43 +411,26 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountUp();
 });
 
-// Cargar el mini robot de Botpress v5.0 en toda la web
-(function() {
-  // 1. Inyectar el motor principal de Botpress
-  const script1 = document.createElement('script');
-  script1.src = 'https://botpress.cloud';
-  document.body.appendChild(script1);
+// Avisar al robot de Botpress v5.0 en qué página está el usuario
+window.addEventListener('load', () => {
+  const esperarBotpress = setInterval(() => {
+    if (window.botpress && typeof window.botpress.on === 'function') {
+      clearInterval(esperarBotpress);
 
-  // 2. Inyectar la configuración de tu bot kivoLinkPag
-  script1.onload = function() {
-    const script2 = document.createElement('script');
-    script2.src = 'https://bpcontent.cloud';
-    document.body.appendChild(script2);
-
-    // 3. Avisar al robot qué página y título está viendo el usuario
-    script2.onload = function() {
-      if (window.botpress) {
-        window.botpress.on('webchat:ready', () => {
-          window.botpress.updateUser({
-            data: {
-              paginaActual: window.location.pathname,
-              tituloPagina: document.title
-            }
-          });
+      const enviarUbicacion = () => {
+        window.botpress.sendEvent({
+          type: 'custom',
+          payload: {
+            paginaActual: window.location.pathname,
+            tituloPagina: document.title
+          }
         });
-      }
-    };
-  };
+      };
 
-  // 4. Mover el robot un poco a la izquierda para no tapar el botón de música
-  const style = document.createElement('style');
-  style.innerHTML = `
-    #bp-web-widget-container, .bpFab, iframe[title*="Botpress"] {
-      right: 85px !important;
-      bottom: 20px !important;
-      z-index: 9999 !important;
+      // Enviar la ubicación cuando el chat esté listo y cada vez que el usuario lo abra
+      window.botpress.on('webchat:ready', enviarUbicacion);
+      window.botpress.on('webchat:opened', enviarUbicacion);
     }
-  `;
-  document.head.appendChild(style);
-})();
+  }, 500);
+});
 
