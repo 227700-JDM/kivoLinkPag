@@ -411,87 +411,219 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountUp();
 });
 
-// Ajustar posición y estilo del mini robot de Botpress sin tapar el botón de música
+// =========================================================================
+// MINI ROBOT GUÍA CON INTELIGENCIA ARTIFICIAL (GEMINI) - KIVOLINK
+// =========================================================================
 (function() {
-  const aplicarEstilosRobot = () => {
-    if (document.getElementById('kivo-botpress-style')) return;
+  const URL_WORKER = "https://workers.dev";
+
+  const iniciarRobotKivoLink = () => {
+    if (document.getElementById('kivo-robot-container')) return;
 
     const style = document.createElement('style');
-    style.id = 'kivo-botpress-style';
     style.innerHTML = `
-      /* Mover el botón flotante de Botpress a la izquierda del reproductor de música */
-      #bp-web-widget-container, 
-      .bpFab, 
-      iframe[title*="Botpress"],
-      div[data-testid="bp-fab"] {
-        right: 85px !important;
-        bottom: 20px !important;
-        z-index: 9998 !important;
+      #kivo-robot-container {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 9999;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      #kivo-robot-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #111827;
+        border: 3px solid #eab308;
+        box-shadow: 0 6px 20px rgba(234, 179, 8, 0.35);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.25s ease;
+        animation: kivoFlotar 3s ease-in-out infinite;
+      }
+      #kivo-robot-btn:hover { transform: scale(1.08); }
+      @keyframes kivoFlotar {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+      }
+      #kivo-chat-window {
+        display: none;
+        width: 320px;
+        height: 410px;
+        background: #ffffff;
+        border: 2px solid #111827;
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+        flex-direction: column;
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+      #kivo-chat-header {
+        background: #111827;
+        color: #ffffff;
+        padding: 12px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+        font-size: 14px;
+        border-bottom: 2px solid #eab308;
+      }
+      #kivo-chat-messages {
+        flex: 1;
+        padding: 12px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background: #f9fafb;
+        font-size: 13.5px;
+      }
+      .kivo-msg-bot {
+        background: #ffffff;
+        color: #111827;
+        padding: 10px 12px;
+        border-radius: 12px 12px 12px 2px;
+        border: 1px solid #e5e7eb;
+        align-self: flex-start;
+        max-width: 85%;
+        line-height: 1.4;
+      }
+      .kivo-msg-user {
+        background: #eab308;
+        color: #111827;
+        font-weight: 500;
+        padding: 10px 12px;
+        border-radius: 12px 12px 2px 12px;
+        align-self: flex-end;
+        max-width: 85%;
+        line-height: 1.4;
+      }
+      #kivo-chat-input-area {
+        display: flex;
+        padding: 10px;
+        background: #ffffff;
+        border-top: 1px solid #e5e7eb;
+        gap: 6px;
+      }
+      #kivo-chat-input {
+        flex: 1;
+        border: 1px solid #d1d5db;
+        border-radius: 20px;
+        padding: 8px 14px;
+        font-size: 13px;
+        outline: none;
+      }
+      #kivo-chat-send {
+        background: #111827;
+        color: #eab308;
+        border: none;
+        border-radius: 20px;
+        padding: 8px 14px;
+        font-weight: bold;
+        cursor: pointer;
       }
     `;
     document.head.appendChild(style);
+
+    const container = document.createElement('div');
+    container.id = 'kivo-robot-container';
+    container.innerHTML = `
+      <div id="kivo-chat-window">
+        <div id="kivo-chat-header">
+          <span>🤖 Asistente KivoLink</span>
+          <span id="kivo-close-chat" style="cursor:pointer; font-size:18px;">×</span>
+        </div>
+        <div id="kivo-chat-messages">
+          <div class="kivo-msg-bot">¡Hola! Soy el robot guía de <b>KivoLink</b>. Puedo explicarte cómo funciona esta pantalla o llevarte a cualquier sección. ¿En qué te ayudo?</div>
+        </div>
+        <div id="kivo-chat-input-area">
+          <input type="text" id="kivo-chat-input" placeholder="Ej: Llévame a calibrar el guante..." />
+          <button id="kivo-chat-send">Enviar</button>
+        </div>
+      </div>
+      <button id="kivo-robot-btn" title="Hablar con el robot guía">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="10" rx="2" fill="#1f2937"/>
+          <circle cx="12" cy="5" r="2" fill="#eab308"/>
+          <path d="M12 7v4"/>
+          <line x1="8" y1="16" x2="8" y2="16" stroke-width="3"/>
+          <line x1="16" y1="16" x2="16" y2="16" stroke-width="3"/>
+        </svg>
+      </button>
+    `;
+    document.body.appendChild(container);
+
+    const chatWin = document.getElementById('kivo-chat-window');
+    const robotBtn = document.getElementById('kivo-robot-btn');
+    const closeBtn = document.getElementById('kivo-close-chat');
+    const input = document.getElementById('kivo-chat-input');
+    const sendBtn = document.getElementById('kivo-chat-send');
+    const messagesDiv = document.getElementById('kivo-chat-messages');
+
+    robotBtn.onclick = () => {
+      chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
+    };
+    closeBtn.onclick = () => { chatWin.style.display = 'none'; };
+
+    const agregarMensaje = (texto, esUsuario) => {
+      const div = document.createElement('div');
+      div.className = esUsuario ? 'kivo-msg-user' : 'kivo-msg-bot';
+      div.innerText = texto;
+      messagesDiv.appendChild(div);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      return div;
+    };
+
+    const enviarPregunta = async () => {
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      agregarMensaje(texto, true);
+      input.value = '';
+      const burbujaCarga = agregarMensaje('Pensando...', false);
+
+      const paginaActual = `${window.location.pathname} (${document.title})`;
+      const textosVisibles = Array.from(document.querySelectorAll('h1, h2, button, a'))
+        .map(el => el.innerText.trim())
+        .filter(t => t.length > 1 && t.length < 40)
+        .slice(0, 12)
+        .join(', ');
+
+      try {
+        const res = await fetch(URL_WORKER, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mensaje: texto, paginaActual, textosVisibles })
+        });
+        const data = await res.json();
+        burbujaCarga.innerText = data.respuesta;
+
+        if (data.musica === 'toggle') {
+          const audio = document.querySelector('audio');
+          if (audio) audio.paused ? audio.play() : audio.pause();
+        }
+        if (data.navegar && data.navegar !== 'null') {
+          setTimeout(() => {
+            window.location.href = data.navegar;
+          }, 1400);
+        }
+      } catch (e) {
+        burbujaCarga.innerText = 'Error al conectar con el robot. Revisa tu conexión.';
+      }
+    };
+
+    sendBtn.onclick = enviarPregunta;
+    input.onkeypress = (e) => { if (e.key === 'Enter') enviarPregunta(); };
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', aplicarEstilosRobot);
+    document.addEventListener('DOMContentLoaded', iniciarRobotKivoLink);
   } else {
-    aplicarEstilosRobot();
+    iniciarRobotKivoLink();
   }
-})();
-
-//------------------------------------
-
-// =========================================================================
-// INTEGRACIÓN COMPLETA DEL MINI ROBOT GUÍA DE KIVOLINK (BOTPRESS V5.0)
-// =========================================================================
-(function() {
-  // 1. Ajustar posición del chat para que no tape el reproductor de música
-  const style = document.createElement('style');
-  style.innerHTML = `
-    #bp-web-widget-container, .bpFab, iframe[title*="Botpress"], div[data-testid="bp-fab"] {
-      right: 85px !important;
-      bottom: 20px !important;
-      z-index: 9998 !important;
-    }
-  `;
-  document.head.appendChild(style);
-
-  // 2. Si esta página HTML no tiene los scripts en el <head>, cargarlos aquí
-  if (!document.querySelector('script[src*="botpress.cloud"]')) {
-    const s1 = document.createElement('script');
-    s1.src = 'https://botpress.cloud';
-    document.body.appendChild(s1);
-
-    s1.onload = () => {
-      const s2 = document.createElement('script');
-      s2.src = 'https://bpcontent.cloud';
-      document.body.appendChild(s2);
-    };
-  }
-
-    // 3. Detectar si el robot envía un enlace .html y navegar automáticamente
-  const conectarCerebroWeb = setInterval(() => {
-    if (window.botpress && typeof window.botpress.on === 'function') {
-      clearInterval(conectarCerebroWeb);
-
-      window.botpress.on('message', (mensaje) => {
-        const texto = mensaje?.payload?.text || mensaje?.text || '';
-        
-        // Busca cualquier archivo .html mencionado en un enlace del bot (ej. dashboard.html)
-        const matchArchivo = texto.match(/\(([a-zA-Z0-9_-]+\.html)\)/);
-        if (matchArchivo && matchArchivo[1]) {
-          const destino = matchArchivo[1];
-          // Solo redirige si no estamos ya en esa misma página
-          if (!window.location.pathname.endsWith(destino)) {
-            setTimeout(() => {
-              window.location.href = destino;
-            }, 1300);
-          }
-        }
-      });
-    }
-  }, 400);
-
 })();
 
 
