@@ -12,7 +12,7 @@
  
   /* ----- 1) CONFIGURACIÓN (cambia solo WORKER_URL) ----- */
   const CONFIG = Object.assign({
-    WORKER_URL: '',            // ejemplo: 'https://kivo.tu-usuario.workers.dev'  (vacío = modo sin Gemini)
+    WORKER_URL: 'https://kivolink.aldairabel9.workers.dev',            // ejemplo: 'https://kivo.tu-usuario.workers.dev'  (vacío = modo sin Gemini)
     HIGHLIGHT_MS: 3000,        // cuánto dura el borde brillante
     MAX_HISTORY: 8,            // cuántos mensajes anteriores se envían a Gemini
     TIMEOUT_MS: 20000          // espera máxima por la respuesta
