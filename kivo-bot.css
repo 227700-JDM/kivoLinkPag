@@ -1,0 +1,142 @@
+/* kivo-bot.css — Robot guía "Kivo": dibujo, gestos, ventana de chat y resaltado.
+   Todas las animaciones usan solo movimiento y transparencia (ligero para celulares). */
+
+.kivo-bot { --kivo-accent: var(--primary-color, #22d3ee); position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 84px; font-family: var(--font-body, system-ui, sans-serif); }
+.kivo-bot, .kivo-bot * { box-sizing: border-box; }
+
+/* Sin marco de foco molesto al hacer clic. Con teclado sí se ve un aro suave (accesibilidad). */
+.kivo-bot :focus { outline: none; }
+.kivo-bot :focus-visible { outline: none; box-shadow: 0 0 0 3px var(--kivo-accent); border-radius: 14px; }
+.kivo-bot button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* Para que no se encime con el botón de música ni con otras partes de la página */
+html.kivo-active .music-toggle { right: 108px; }
+html.kivo-chat-page .kivo-bot { bottom: 96px; }
+html.splash-lock .kivo-bot, html.splash-hold .kivo-bot, html.curtain-cover .kivo-bot { display: none; }
+html.sidebar-open .kivo-bot { opacity: 0; pointer-events: none; }
+.curtain.is-closing ~ .kivo-bot { visibility: hidden; }
+.kivo-bot { animation: kivo-enter 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+@keyframes kivo-enter { from { opacity: 0; transform: translateX(80px) scale(0.6); } to { opacity: 1; transform: none; } }
+
+/* ---------- Botón con el robot ---------- */
+.kivo-toggle { position: relative; display: block; width: 84px; height: 98px; padding: 0; border: 0; background: transparent; }
+.kivo-toggle:hover .kivo-float { animation-duration: 1.8s; }
+.kivo-dot { position: absolute; top: 6px; right: 8px; width: 13px; height: 13px; border-radius: 50%; background: #34d399; border: 2px solid #0b0d12; }
+.kivo-bot.is-opened .kivo-dot { display: none; }
+.kivo-svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.35)); }
+
+/* Partes del dibujo */
+.kivo-svg * { transform-box: fill-box; }
+.kivo-head { fill: url(#kivoMetal); }
+.kivo-ear, .kivo-body, .kivo-arm { fill: #b9c3d8; }
+.kivo-screen { fill: #0b0d12; }
+.kivo-eye { fill: var(--kivo-accent); }
+.kivo-eyes-happy path, .kivo-mouth, .kivo-waves path { fill: none; stroke: var(--kivo-accent); stroke-width: 3; stroke-linecap: round; }
+.kivo-arm-point line { stroke: #b9c3d8; stroke-width: 11; stroke-linecap: round; }
+.kivo-antenna line { stroke: #b9c3d8; stroke-width: 3; stroke-linecap: round; }
+.kivo-bulb { fill: var(--kivo-accent); }
+.kivo-core { fill: var(--kivo-accent); }
+.kivo-cheek { fill: #ff8fb1; opacity: 0.35; }
+.kivo-shadow { fill: rgba(0, 0, 0, 0.35); }
+.kivo-thought circle { fill: var(--kivo-accent); opacity: 0; }
+
+/* Dos capas para que flotar e inclinarse no se pisen */
+.kivo-float { animation: kivo-float 3.2s ease-in-out infinite; transform-origin: center; }
+.kivo-lean { transform-origin: 60px 120px; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes kivo-float { 50% { transform: translateY(-6px); } }
+
+/* Valores normales (idle): parpadeo y antena que late */
+.kivo-eyes { transform-origin: center; animation: kivo-blink 5s infinite; }
+.kivo-bulb { transform-origin: center; animation: kivo-bulb 2s ease-in-out infinite; }
+.kivo-mouth { transform-origin: center; }
+.kivo-eyes-happy, .kivo-waves, .kivo-arm-point { display: none; }
+@keyframes kivo-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+@keyframes kivo-bulb { 50% { transform: scale(1.4); opacity: 0.6; } }
+
+/* ---------- GESTO: thinking (pensando) ---------- */
+.kivo-bot.thinking .kivo-eyes { animation: kivo-search 1.1s ease-in-out infinite alternate; }
+.kivo-bot.thinking .kivo-bulb { animation: kivo-bulb 0.45s ease-in-out infinite; }
+.kivo-bot.thinking .kivo-thought circle { animation: kivo-thought 1.2s infinite; }
+.kivo-bot.thinking .kivo-thought circle:nth-child(2) { animation-delay: 0.2s; }
+.kivo-bot.thinking .kivo-thought circle:nth-child(3) { animation-delay: 0.4s; }
+@keyframes kivo-search { from { transform: translateX(-6px); } to { transform: translateX(6px); } }
+@keyframes kivo-thought { 0%, 100% { opacity: 0; } 40%, 70% { opacity: 1; } }
+
+/* ---------- GESTO: talking (hablando) ---------- */
+.kivo-bot.talking .kivo-mouth { animation: kivo-talk 0.26s ease-in-out infinite; }
+.kivo-bot.talking .kivo-waves { display: block; }
+.kivo-bot.talking .kivo-waves path { animation: kivo-wave 0.8s ease-in-out infinite; }
+.kivo-bot.talking .kivo-waves path:nth-child(even) { animation-delay: 0.25s; }
+@keyframes kivo-talk { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(2.4); } }
+@keyframes kivo-wave { 0%, 100% { opacity: 0.15; } 50% { opacity: 1; } }
+
+/* ---------- GESTO: happy (contento) ---------- */
+.kivo-bot.happy .kivo-eyes { display: none; }
+.kivo-bot.happy .kivo-eyes-happy { display: block; }
+.kivo-bot.happy .kivo-mouth { transform: scale(1.5, 1.8); }
+.kivo-bot.happy .kivo-cheek { opacity: 0.8; }
+.kivo-bot.happy .kivo-lean { animation: kivo-hop 0.6s ease-in-out 3; }
+@keyframes kivo-hop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-12px) rotate(-5deg); } 70% { transform: translateY(-12px) rotate(5deg); } }
+
+/* ---------- GESTO: pointing (señalando) ---------- */
+.kivo-bot.pointing .kivo-lean { transform: rotate(-9deg) translateX(-5px); }
+.kivo-bot.pointing .kivo-arm-point { display: block; animation: kivo-point 0.7s ease-in-out infinite alternate; }
+.kivo-bot.pointing .kivo-arm-rest-left { display: none; }
+.kivo-bot.pointing .kivo-bulb { animation-duration: 0.6s; }
+@keyframes kivo-point { to { transform: translate(-4px, -2px); } }
+
+/* ---------- Globo de saludo ---------- */
+.kivo-hello { position: absolute; right: 8px; bottom: 104px; width: 230px; padding: 12px 14px; border-radius: 16px 16px 4px 16px; background: rgba(18, 22, 30, 0.92); color: #f3f5f9; border: 1px solid rgba(255, 255, 255, 0.14); font-size: 14px; line-height: 1.45; box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35); animation: kivo-pop 0.3s ease both; }
+.kivo-hello[hidden], .kivo-window[hidden] { display: none; }
+@keyframes kivo-pop { from { opacity: 0; transform: translateY(8px) scale(0.92); } to { opacity: 1; transform: none; } }
+
+/* ---------- Ventana de chat (vidrio esmerilado) ---------- */
+.kivo-window {
+  position: absolute; right: 0; bottom: 108px; width: min(380px, calc(100vw - 24px)); height: min(540px, 72dvh);
+  display: flex; flex-direction: column; overflow: hidden; border-radius: 22px; color: #f3f5f9;
+  background: rgba(16, 20, 28, 0.72); border: 1px solid rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45); transform-origin: bottom right; animation: kivo-win 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes kivo-win { from { opacity: 0; transform: translateY(18px) scale(0.92); } to { opacity: 1; transform: none; } }
+html:not(.dark-mode).kivo-themed .kivo-window { background: rgba(255, 255, 255, 0.78); color: #0f1115; border-color: rgba(15, 17, 21, 0.14); }
+@media (prefers-reduced-transparency: reduce) { .kivo-window { background: #11141a; -webkit-backdrop-filter: none; backdrop-filter: none; } }
+
+.kivo-header { flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); }
+.kivo-avatar { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--kivo-accent); color: #0f1115; font-size: 20px; }
+.kivo-header strong { display: block; font-size: 15px; }
+.kivo-header span { font-size: 12px; opacity: 0.7; }
+.kivo-close { margin-left: auto; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.06); color: inherit; }
+
+.kivo-messages { flex: 1 1 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 16px; scroll-behavior: smooth; }
+.kivo-msg { max-width: 86%; padding: 10px 14px; border-radius: 16px 16px 16px 4px; background: rgba(255, 255, 255, 0.09); font-size: 14.5px; line-height: 1.5; overflow-wrap: anywhere; animation: kivo-pop 0.25s ease both; }
+.kivo-msg.is-me { align-self: flex-end; border-radius: 16px 16px 4px 16px; background: var(--kivo-accent); color: #0f1115; }
+.kivo-dots { align-self: flex-start; padding: 8px 14px; }
+.kivo-dots i { display: inline-block; width: 6px; height: 6px; margin: 0 2px; border-radius: 50%; background: currentColor; opacity: 0.6; animation: kivo-dots 1s infinite ease-in-out; }
+.kivo-dots i:nth-child(2) { animation-delay: 0.15s; } .kivo-dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes kivo-dots { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-4px); } }
+
+.kivo-suggestions { flex-shrink: 0; display: flex; gap: 8px; padding: 0 16px 10px; overflow-x: auto; }
+.kivo-chip { flex: none; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.07); color: inherit; font-size: 13px; white-space: nowrap; transition: transform 0.2s ease; }
+.kivo-chip:hover { transform: scale(1.04); }
+.kivo-composer { flex-shrink: 0; display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid rgba(255, 255, 255, 0.12); }
+.kivo-input { flex: 1; min-width: 0; padding: 11px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.07); color: inherit; font-size: 16px; }
+.kivo-input::placeholder { color: inherit; opacity: 0.55; }
+.kivo-send { width: 44px; border: 0; border-radius: 50%; background: var(--kivo-accent); color: #0f1115; font-size: 16px; font-weight: 700; }
+.kivo-send[disabled] { opacity: 0.5; cursor: wait; }
+
+/* ---------- Resaltado de la sección o botón que Kivo señala (3 segundos) ---------- */
+.kivo-highlight { border-radius: 18px; animation: kivo-glow 1s ease-in-out 3; box-shadow: 0 0 0 3px var(--primary-color, #22d3ee), 0 0 34px 6px rgba(34, 211, 238, 0.45); }
+@keyframes kivo-glow { 50% { box-shadow: 0 0 0 6px var(--primary-color, #22d3ee), 0 0 52px 12px rgba(34, 211, 238, 0.65); } }
+
+/* ---------- Celulares ---------- */
+@media (max-width: 600px) {
+  .kivo-bot { right: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); width: 68px; }
+  .kivo-toggle { width: 68px; height: 80px; }
+  html.kivo-active .music-toggle { right: 12px; bottom: calc(104px + env(safe-area-inset-bottom)); }
+  html.kivo-chat-page .kivo-bot { bottom: calc(96px + env(safe-area-inset-bottom)); }
+  .kivo-window { position: fixed; left: 10px; right: 10px; bottom: calc(100px + env(safe-area-inset-bottom)); width: auto; height: min(68dvh, 520px); }
+  .kivo-hello { width: min(230px, calc(100vw - 100px)); bottom: 88px; }
+}
+@media (prefers-reduced-motion: reduce) { .kivo-bot, .kivo-bot * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }
+html.pref-calm .kivo-bot, html.pref-calm .kivo-bot * { animation: none !important; }
